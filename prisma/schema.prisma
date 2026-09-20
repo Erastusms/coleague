@@ -1,0 +1,117 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model League {
+  id          String       @id
+  slug        String       @unique
+  name        String
+  logoUrl     String       @map("logo_url")
+  teams       Team[]
+  playerStats PlayerStat[]
+  matches     Match[]
+
+  @@map("leagues")
+}
+
+model Season {
+  id          Int          @id @default(autoincrement())
+  year        Int          @unique
+  standings   Standing[]
+  playerStats PlayerStat[]
+
+  @@map("seasons")
+}
+
+model Team {
+  id               String       @id
+  leagueId         String       @map("league_id")
+  league           League       @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  name             String
+  shortDisplayName String       @map("short_display_name")
+  logoUrl          String       @map("logo_url")
+  standings        Standing[]
+  playerStats      PlayerStat[]
+  homeMatches      Match[]      @relation("HomeMatches")
+  awayMatches      Match[]      @relation("AwayMatches")
+
+  @@map("teams")
+}
+
+model Standing {
+  id             Int      @id @default(autoincrement())
+  teamId         String   @map("team_id")
+  team           Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  seasonId       Int      @map("season_id")
+  season         Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  rank           Int
+  points         Int
+  gamesPlayed    Int      @map("games_played")
+  wins           Int
+  draws          Int
+  losses         Int
+  goalDifference Int      @map("goal_difference")
+  goalsFor       Int      @map("goals_for")
+  goalsAgainst   Int      @map("goals_against")
+  form           Json     @default("[]")
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([teamId, seasonId])
+  @@index([seasonId, rank])
+  @@map("standings")
+}
+
+model PlayerStat {
+  id          Int      @id @default(autoincrement())
+  athleteId   String   @map("athlete_id")
+  athleteName String   @map("athlete_name")
+  teamId      String   @map("team_id")
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  leagueId    String   @map("league_id")
+  league      League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  seasonId    Int      @map("season_id")
+  season      Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  goals       Int      @default(0)
+  assists     Int      @default(0)
+  appearances Int      @default(0)
+  minutes     Int      @default(0)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([athleteId, seasonId, leagueId])
+  @@index([seasonId, leagueId])
+  @@map("player_stats")
+}
+
+model Match {
+  id          String   @id
+  leagueId    String   @map("league_id")
+  league      League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  seasonYear  Int      @map("season_year")
+  matchDate   DateTime @map("match_date")
+  status      String
+  homeTeamId  String   @map("home_team_id")
+  homeTeam    Team     @relation("HomeMatches", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  awayTeamId  String   @map("away_team_id")
+  awayTeam    Team     @relation("AwayMatches", fields: [awayTeamId], references: [id], onDelete: Cascade)
+  homeScore   Int      @map("home_score")
+  awayScore   Int      @map("away_score")
+  totalGoals  Int      @map("total_goals")
+  scorersData Json     @default("[]") @map("scorers_data")
+  statsData   Json     @default("[]") @map("stats_data")
+  rostersData Json     @default("[]") @map("rosters_data")
+  venue       String?  @default("")
+  attendance  Int?     @default(0)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@index([seasonYear, totalGoals(sort: Desc)])
+  @@index([leagueId])
+  @@index([matchDate])
+  @@map("matches")
+}
+
+
