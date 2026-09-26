@@ -4,20 +4,38 @@ import { syncColeagueData } from "@/lib/sync";
 export const maxDuration = 60; // Allow sufficient serverless execution time for ESPN API sync
 
 function verifyCronSecret(req: NextRequest): boolean {
-  const cronSecret = process.env.CRON_SECRET || "your-cron-secret-key";
+  const cronSecret = process.env.CRON_SECRET;
   const authHeader = req.headers.get("authorization");
 
-  if (authHeader) {
-    const [scheme, token] = authHeader.split(" ");
-    if (scheme === "Bearer" && token === cronSecret) {
+  // 1. If CRON_SECRET is configured, strictly enforce bearer token or query secret
+  if (cronSecret) {
+    if (authHeader) {
+      const [scheme, token] = authHeader.split(" ");
+      if (scheme === "Bearer" && token === cronSecret) {
+        return true;
+      }
+    }
+    const { searchParams } = new URL(req.url);
+    const secretParam = searchParams.get("secret");
+    if (secretParam === cronSecret) {
       return true;
     }
+    return false;
   }
 
-  // Also allow ?secret= query parameter
+  // 2. If CRON_SECRET is left blank:
+  // Allow Vercel's scheduled cron job header or local development requests
+  const userAgent = req.headers.get("user-agent") || "";
+  if (
+    process.env.NODE_ENV === "development" ||
+    userAgent.toLowerCase().includes("vercel-cron")
+  ) {
+    return true;
+  }
+
+  // Also support fallback development key for manual testing
   const { searchParams } = new URL(req.url);
-  const secretParam = searchParams.get("secret");
-  if (secretParam === cronSecret) {
+  if (searchParams.get("secret") === "your-cron-secret-key") {
     return true;
   }
 

@@ -9,7 +9,22 @@ if (typeof process.loadEnvFile === "function") {
   }
 }
 
-const prisma = new PrismaClient();
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL =
+    process.env.POSTGRES_PRISMA_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_URL_NON_POOLING;
+}
+
+const prisma = new PrismaClient({
+  datasources: process.env.DATABASE_URL
+    ? {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
+      }
+    : undefined,
+});
 
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString("hex");
