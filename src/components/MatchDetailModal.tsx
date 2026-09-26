@@ -201,12 +201,13 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
             <img
               src={currentMatch.leagueLogoUrl}
               alt={currentMatch.leagueName}
+              title={currentMatch.leagueName}
               className="w-5 h-5 object-contain"
             />
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
+            <span className="hidden md:inline text-xs font-bold text-slate-600 dark:text-slate-300">
               {currentMatch.leagueName}
             </span>
-            <span className="text-slate-300 dark:text-slate-700 text-xs">•</span>
+            <span className="hidden md:inline text-slate-300 dark:text-slate-700 text-xs">•</span>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               {formatMatchDate(currentMatch.matchDate)}
             </span>

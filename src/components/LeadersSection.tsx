@@ -25,14 +25,14 @@ const PlayerStackedCell: React.FC<PlayerStackedCellProps> = ({
   const [logoError, setLogoError] = useState(false);
 
   return (
-    <div className="flex flex-col justify-center py-1">
+    <div className="flex flex-col justify-center py-0.5 md:py-1 min-w-0">
       {/* Top Row: Player Name */}
-      <span className="font-bold text-slate-900 dark:text-slate-100 text-sm tracking-tight hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors truncate">
+      <span className="font-bold text-slate-900 dark:text-slate-100 text-xs md:text-sm tracking-tight hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors truncate">
         {playerName}
       </span>
       {/* Bottom Row: Small Club Logo + Club ShortDisplayName */}
-      <div className="flex items-center gap-1.5 mt-0.5">
-        <div className="w-3.5 h-3.5 rounded-full overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+      <div className="flex items-center gap-1 md:gap-1.5 mt-0.5">
+        <div className="w-3 h-3 md:w-3.5 md:h-3.5 rounded-full overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
           {!logoError && clubLogoUrl ? (
             <img
               src={clubLogoUrl}
@@ -44,12 +44,12 @@ const PlayerStackedCell: React.FC<PlayerStackedCellProps> = ({
               loading="lazy"
             />
           ) : (
-            <span className="text-[8px] font-bold text-slate-400">
+            <span className="text-[7px] md:text-[8px] font-bold text-slate-400">
               {clubShortName.slice(0, 1)}
             </span>
           )}
         </div>
-        <span className="text-xs text-slate-500 dark:text-slate-400 truncate tracking-tight font-medium">
+        <span className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 truncate tracking-tight font-medium">
           {clubShortName}
         </span>
       </div>
@@ -71,12 +71,12 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
         {[...Array(2)].map((_, idx) => (
           <div
             key={idx}
-            className="bg-white dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl animate-pulse transition-colors"
+            className="bg-transparent md:bg-white md:dark:bg-slate-900/80 md:backdrop-blur-md border-0 md:border md:border-slate-200 md:dark:border-slate-800 rounded-none md:rounded-2xl p-0 md:p-6 shadow-none md:shadow-sm md:dark:shadow-xl animate-pulse transition-colors"
           >
             <div className="h-7 bg-slate-200 dark:bg-slate-800 rounded-lg w-1/3 mb-4"></div>
             <div className="space-y-3">
               {[...Array(10)].map((_, i) => (
-                <div key={i} className="h-10 bg-slate-100 dark:bg-slate-800/60 rounded-xl"></div>
+                <div key={i} className="h-8 md:h-10 bg-slate-100 dark:bg-slate-800/60 rounded-xl"></div>
               ))}
             </div>
           </div>
@@ -90,7 +90,7 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <Award className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
             Player Leaders
           </h2>
         </div>
@@ -103,18 +103,18 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
         }`}
       >
         {/* ================= TOP SCORERS CARD ================= */}
-        <div className="bg-white dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800/90 rounded-2xl shadow-sm dark:shadow-xl overflow-hidden flex flex-col justify-between transition-colors duration-200">
+        <div className="bg-transparent md:bg-white md:dark:bg-slate-900/80 md:backdrop-blur-md border-0 md:border md:border-slate-200 md:dark:border-slate-800/90 rounded-none md:rounded-2xl shadow-none md:shadow-sm md:dark:shadow-xl overflow-hidden flex flex-col justify-between transition-colors duration-200">
           <div>
-            <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between bg-gradient-to-r from-amber-500/10 via-transparent to-transparent">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-                  <Flame className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+            <div className="px-0 py-2.5 md:px-5 md:py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between bg-gradient-to-r from-amber-500/10 via-transparent to-transparent">
+              <div className="flex items-center gap-2 md:gap-2.5">
+                <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                  <Flame className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-500 dark:text-amber-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                  <h3 className="font-bold text-slate-900 dark:text-white text-sm md:text-base">
                     Top Scorers
                   </h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[10px] md:text-[11px] text-slate-500 dark:text-slate-400">
                     Golden Boot Ranking
                   </p>
                 </div>
@@ -122,28 +122,28 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
             </div>
 
             {/* Table: Rank, Player, League, Goals, Assist, Apps, Mins */}
-            <div className="overflow-x-auto custom-scrollbar scrollbar-stable min-h-[460px]" style={{ scrollbarGutter: "stable" }}>
-              <table className="w-full text-left border-collapse min-w-[480px]">
+            <div className="overflow-x-auto custom-scrollbar scrollbar-stable min-h-[360px] md:min-h-[460px]" style={{ scrollbarGutter: "stable" }}>
+              <table className="w-full text-left border-collapse min-w-full md:min-w-[480px]">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-950/40">
-                    <th className="py-3 pl-4 pr-2 w-10 text-center">#</th>
-                    <th className="py-3 px-3">Player</th>
-                    <th className="py-3 px-2 w-14 text-center">League</th>
-                    <th className="py-3 px-2.5 w-14 text-center font-extrabold text-amber-600 dark:text-amber-400">
+                  <tr className="border-b border-slate-200 dark:border-slate-800 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-950/40">
+                    <th className="py-2 md:py-3 pl-2 pr-1 md:pl-4 md:pr-2 w-7 sm:w-8 md:w-10 text-center">#</th>
+                    <th className="py-2 md:py-3 pl-1 pr-2 md:px-3 min-w-[110px] md:min-w-[160px]">Player</th>
+                    <th className="py-2 md:py-3 px-2 md:px-3 w-16 md:w-16 text-center">League</th>
+                    <th className="py-2 md:py-3 pl-2 pr-3 md:px-3 w-16 md:w-16 text-right md:text-center font-extrabold text-amber-600 dark:text-amber-400">
                       Goals
                     </th>
-                    <th className="py-3 px-2 w-12 text-center text-slate-500 dark:text-slate-400">
+                    <th className="hidden md:table-cell py-2 md:py-3 px-0.5 md:px-2 w-6 md:w-12 text-center text-slate-500 dark:text-slate-400">
                       Assist
                     </th>
-                    <th className="py-3 px-2 w-12 text-center text-slate-500 dark:text-slate-400">
+                    <th className="hidden md:table-cell py-2 md:py-3 px-0.5 md:px-2 w-6 md:w-12 text-center text-slate-500 dark:text-slate-400">
                       Apps
                     </th>
-                    <th className="py-3 pr-4 pl-2 w-16 text-right text-slate-500 dark:text-slate-400">
+                    <th className="hidden md:table-cell py-2 md:py-3 pr-2 md:pr-4 pl-0.5 md:pl-2 w-9 md:w-16 text-right text-slate-500 dark:text-slate-400">
                       Mins
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50 text-xs font-medium">
+                <tbody className="divide-y-2 divide-slate-200 dark:divide-slate-800 md:divide-y md:divide-slate-100 md:dark:divide-slate-800/50 text-xs font-medium">
                   {topScorers.length > 0 ? (
                     topScorers.map((player) => (
                       <tr
@@ -151,28 +151,28 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
                         className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group"
                       >
                         {/* Rank (Podium for 1-3, plain for 4+) */}
-                        <td className="py-2.5 pl-4 pr-2 text-center">
+                        <td className="py-2.5 md:py-3 pl-2 pr-1 md:pl-4 md:pr-2 text-center">
                           {player.rank === 1 ? (
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-xs bg-amber-400 text-amber-950 shadow-sm">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-[10px] md:text-xs bg-amber-400 text-amber-950 shadow-sm">
                               1
                             </span>
                           ) : player.rank === 2 ? (
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-xs bg-slate-300 text-slate-900 shadow-sm">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-[10px] md:text-xs bg-slate-300 text-slate-900 shadow-sm">
                               2
                             </span>
                           ) : player.rank === 3 ? (
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-xs bg-amber-700 text-amber-50 shadow-sm">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-[10px] md:text-xs bg-amber-700 text-amber-50 shadow-sm">
                               3
                             </span>
                           ) : (
-                            <span className="text-slate-500 dark:text-slate-400 font-semibold text-xs">
+                            <span className="text-slate-500 dark:text-slate-400 font-semibold text-[10px] md:text-xs">
                               {player.rank}
                             </span>
                           )}
                         </td>
 
                         {/* Player (2-row stacked cell: Name on top, Club logo+name on bottom) */}
-                        <td className="py-2.5 px-3">
+                        <td className="py-2.5 md:py-3 pl-1 pr-2 md:px-3">
                           <PlayerStackedCell
                             playerName={player.athleteName}
                             clubShortName={player.team.shortDisplayName}
@@ -181,34 +181,34 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
                         </td>
 
                         {/* League (Naked logo with hover tooltip) */}
-                        <td className="py-2.5 px-2 text-center">
+                        <td className="py-2.5 md:py-3 px-2 md:px-3 text-center">
                           <div className="flex justify-center">
                             <NakedLeagueLogo
                               name={player.league.name}
                               logoUrl={player.league.logoUrl}
                               slug={player.league.slug}
-                              size={20}
+                              size={18}
                             />
                           </div>
                         </td>
 
                         {/* Goals */}
-                        <td className="py-2.5 px-2.5 text-center font-mono font-black text-amber-600 dark:text-amber-400 text-sm">
+                        <td className="py-2.5 md:py-3 pl-2 pr-3 md:px-3 text-right md:text-center font-mono font-black text-amber-600 dark:text-amber-400 text-xs md:text-sm">
                           {player.goals}
                         </td>
 
                         {/* Assist */}
-                        <td className="py-2.5 px-2 text-center font-mono text-slate-700 dark:text-slate-300">
+                        <td className="hidden md:table-cell py-2.5 md:py-3 px-0.5 md:px-2 text-center font-mono text-slate-700 dark:text-slate-300 text-[11px] md:text-xs">
                           {player.assists}
                         </td>
 
                         {/* Apps */}
-                        <td className="py-2.5 px-2 text-center font-mono text-slate-500 dark:text-slate-400">
+                        <td className="hidden md:table-cell py-2.5 md:py-3 px-0.5 md:px-2 text-center font-mono text-slate-500 dark:text-slate-400 text-[11px] md:text-xs">
                           {player.appearances}
                         </td>
 
                         {/* Mins */}
-                        <td className="py-2.5 pr-4 pl-2 text-right font-mono text-slate-500 dark:text-slate-400">
+                        <td className="hidden md:table-cell py-2.5 md:py-3 pr-2 md:pr-4 pl-0.5 md:pl-2 text-right font-mono text-slate-500 dark:text-slate-400 text-[10px] md:text-xs">
                           {player.minutes ? `${player.minutes}'` : "-"}
                         </td>
                       </tr>
@@ -226,19 +226,22 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
           </div>
         </div>
 
+        {/* Divider line between scorers and assists on mobile */}
+        <div className="border-b border-slate-200 dark:border-slate-800/80 my-4 md:hidden" />
+
         {/* ================= TOP ASSISTS CARD ================= */}
-        <div className="bg-white dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800/90 rounded-2xl shadow-sm dark:shadow-xl overflow-hidden flex flex-col justify-between transition-colors duration-200">
+        <div className="bg-transparent md:bg-white md:dark:bg-slate-900/80 md:backdrop-blur-md border-0 md:border md:border-slate-200 md:dark:border-slate-800/90 rounded-none md:rounded-2xl shadow-none md:shadow-sm md:dark:shadow-xl overflow-hidden flex flex-col justify-between transition-colors duration-200">
           <div>
-            <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between bg-gradient-to-r from-indigo-500/10 via-transparent to-transparent">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
-                  <Award className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <div className="px-0 py-2.5 md:px-5 md:py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between bg-gradient-to-r from-indigo-500/10 via-transparent to-transparent">
+              <div className="flex items-center gap-2 md:gap-2.5">
+                <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
+                  <Award className="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                  <h3 className="font-bold text-slate-900 dark:text-white text-sm md:text-base">
                     Top Assists
                   </h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[10px] md:text-[11px] text-slate-500 dark:text-slate-400">
                     Playmaker Ranking
                   </p>
                 </div>
@@ -246,28 +249,28 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
             </div>
 
             {/* Table: Rank, Player, League, Assist, Goals, Apps, Mins */}
-            <div className="overflow-x-auto custom-scrollbar scrollbar-stable min-h-[460px]" style={{ scrollbarGutter: "stable" }}>
-              <table className="w-full text-left border-collapse min-w-[480px]">
+            <div className="overflow-x-auto custom-scrollbar scrollbar-stable min-h-[360px] md:min-h-[460px]" style={{ scrollbarGutter: "stable" }}>
+              <table className="w-full text-left border-collapse min-w-full md:min-w-[480px]">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-950/40">
-                    <th className="py-3 pl-4 pr-2 w-10 text-center">#</th>
-                    <th className="py-3 px-3">Player</th>
-                    <th className="py-3 px-2 w-14 text-center">League</th>
-                    <th className="py-3 px-2.5 w-14 text-center font-extrabold text-indigo-600 dark:text-indigo-400">
+                  <tr className="border-b border-slate-200 dark:border-slate-800 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-950/40">
+                    <th className="py-2 md:py-3 pl-2 pr-1 md:pl-4 md:pr-2 w-7 sm:w-8 md:w-10 text-center">#</th>
+                    <th className="py-2 md:py-3 pl-1 pr-2 md:px-3 min-w-[110px] md:min-w-[160px]">Player</th>
+                    <th className="py-2 md:py-3 px-2 md:px-3 w-16 md:w-16 text-center">League</th>
+                    <th className="py-2 md:py-3 pl-2 pr-3 md:px-3 w-16 md:w-16 text-right md:text-center font-extrabold text-indigo-600 dark:text-indigo-400">
                       Assist
                     </th>
-                    <th className="py-3 px-2 w-12 text-center text-slate-500 dark:text-slate-400">
+                    <th className="hidden md:table-cell py-2 md:py-3 px-0.5 md:px-2 w-6 md:w-12 text-center text-slate-500 dark:text-slate-400">
                       Goals
                     </th>
-                    <th className="py-3 px-2 w-12 text-center text-slate-500 dark:text-slate-400">
+                    <th className="hidden md:table-cell py-2 md:py-3 px-0.5 md:px-2 w-6 md:w-12 text-center text-slate-500 dark:text-slate-400">
                       Apps
                     </th>
-                    <th className="py-3 pr-4 pl-2 w-16 text-right text-slate-500 dark:text-slate-400">
+                    <th className="hidden md:table-cell py-2 md:py-3 pr-2 md:pr-4 pl-0.5 md:pl-2 w-9 md:w-16 text-right text-slate-500 dark:text-slate-400">
                       Mins
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50 text-xs font-medium">
+                <tbody className="divide-y-2 divide-slate-200 dark:divide-slate-800 md:divide-y md:divide-slate-100 md:dark:divide-slate-800/50 text-xs font-medium">
                   {topAssists.length > 0 ? (
                     topAssists.map((player) => (
                       <tr
@@ -275,28 +278,28 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
                         className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group"
                       >
                         {/* Rank (Podium for 1-3, plain for 4+) */}
-                        <td className="py-2.5 pl-4 pr-2 text-center">
+                        <td className="py-2.5 md:py-3 pl-2 pr-1 md:pl-4 md:pr-2 text-center">
                           {player.rank === 1 ? (
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-xs bg-indigo-500 text-white shadow-sm">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-[10px] md:text-xs bg-indigo-500 text-white shadow-sm">
                               1
                             </span>
                           ) : player.rank === 2 ? (
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-xs bg-slate-300 text-slate-900 shadow-sm">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-[10px] md:text-xs bg-slate-300 text-slate-900 shadow-sm">
                               2
                             </span>
                           ) : player.rank === 3 ? (
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-xs bg-amber-700 text-amber-50 shadow-sm">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-md font-bold text-[10px] md:text-xs bg-amber-700 text-amber-50 shadow-sm">
                               3
                             </span>
                           ) : (
-                            <span className="text-slate-500 dark:text-slate-400 font-semibold text-xs">
+                            <span className="text-slate-500 dark:text-slate-400 font-semibold text-[10px] md:text-xs">
                               {player.rank}
                             </span>
                           )}
                         </td>
 
                         {/* Player (2-row stacked cell: Name on top, Club logo+name on bottom) */}
-                        <td className="py-2.5 px-3">
+                        <td className="py-2.5 md:py-3 pl-1 pr-2 md:px-3">
                           <PlayerStackedCell
                             playerName={player.athleteName}
                             clubShortName={player.team.shortDisplayName}
@@ -305,34 +308,34 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
                         </td>
 
                         {/* League (Naked logo with hover tooltip) */}
-                        <td className="py-2.5 px-2 text-center">
+                        <td className="py-2.5 md:py-3 px-2 md:px-3 text-center">
                           <div className="flex justify-center">
                             <NakedLeagueLogo
                               name={player.league.name}
                               logoUrl={player.league.logoUrl}
                               slug={player.league.slug}
-                              size={20}
+                              size={18}
                             />
                           </div>
                         </td>
 
                         {/* Assist */}
-                        <td className="py-2.5 px-2.5 text-center font-mono font-black text-indigo-600 dark:text-indigo-400 text-sm">
+                        <td className="py-2.5 md:py-3 pl-2 pr-3 md:px-3 text-right md:text-center font-mono font-black text-indigo-600 dark:text-indigo-400 text-xs md:text-sm">
                           {player.assists}
                         </td>
 
                         {/* Goals */}
-                        <td className="py-2.5 px-2 text-center font-mono text-slate-700 dark:text-slate-300">
+                        <td className="hidden md:table-cell py-2.5 md:py-3 px-0.5 md:px-2 text-center font-mono text-slate-700 dark:text-slate-300 text-[11px] md:text-xs">
                           {player.goals}
                         </td>
 
                         {/* Apps */}
-                        <td className="py-2.5 px-2 text-center font-mono text-slate-500 dark:text-slate-400">
+                        <td className="hidden md:table-cell py-2.5 md:py-3 px-0.5 md:px-2 text-center font-mono text-slate-500 dark:text-slate-400 text-[11px] md:text-xs">
                           {player.appearances}
                         </td>
 
                         {/* Mins */}
-                        <td className="py-2.5 pr-4 pl-2 text-right font-mono text-slate-500 dark:text-slate-400">
+                        <td className="hidden md:table-cell py-2.5 md:py-3 pr-2 md:pr-4 pl-0.5 md:pl-2 text-right font-mono text-slate-500 dark:text-slate-400 text-[10px] md:text-xs">
                           {player.minutes ? `${player.minutes}'` : "-"}
                         </td>
                       </tr>

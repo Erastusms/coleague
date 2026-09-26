@@ -228,10 +228,10 @@ export default function MatchDetailPage() {
       team: "home" | "away";
     }> = [];
 
-    // Home team: bottom half (y: 82% for GK up to 54% for Strikers)
+    // Home team: bottom half (y: 87% for GK up to 57% for Strikers)
     const homeRowCount = homeLines.length;
     homeLines.forEach((row, rIdx) => {
-      const yPct = 82 - (rIdx / (homeRowCount - 1 || 1)) * 28;
+      const yPct = 87 - (rIdx / (homeRowCount - 1 || 1)) * 30;
       row.forEach((player, cIdx) => {
         const xPct = ((cIdx + 1) / (row.length + 1)) * 100;
         positions.push({
@@ -243,10 +243,10 @@ export default function MatchDetailPage() {
       });
     });
 
-    // Away team: top half (y: 16.5% for GK down to 44% for Strikers)
+    // Away team: top half (y: 13% for GK down to 43% for Strikers)
     const awayRowCount = awayLines.length;
     awayLines.forEach((row, rIdx) => {
-      const yPct = 16.5 + (rIdx / (awayRowCount - 1 || 1)) * 27.5;
+      const yPct = 13 + (rIdx / (awayRowCount - 1 || 1)) * 30;
       row.forEach((player, cIdx) => {
         const xPct = ((cIdx + 1) / (row.length + 1)) * 100;
         positions.push({
@@ -267,63 +267,63 @@ export default function MatchDetailPage() {
     team: "home" | "away" = "home",
     size: "sm" | "md" = "sm"
   ) => {
-    // Substantially enlarged jersey size (~48px–56px for clear prominence)
+    // Smaller responsive jersey size to avoid cramped overlapping on mobile
     const sizeClasses =
       size === "sm"
-        ? "w-11 h-11 sm:w-13 sm:h-13"
-        : "w-13 h-13 sm:w-16 sm:h-16";
+        ? "w-7 h-7 sm:w-10 sm:h-10 md:w-11 md:h-11"
+        : "w-9 h-9 sm:w-12 sm:h-12 md:w-13 md:h-13";
 
     return (
-      <div className={`relative ${sizeClasses} flex items-center justify-center mb-1`}>
+      <div className={`relative ${sizeClasses} flex items-center justify-center mb-0.5 sm:mb-1`}>
         {/* Top-Left: Substituted Out badge (Only red downward arrow, no minute) */}
         {player.subbedOut && (
           <div
-            className="absolute -top-1.5 -left-1.5 sm:-top-2 sm:-left-2 z-20 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-rose-600 text-white shadow-md border-1.5 border-white flex items-center justify-center pointer-events-none"
+            className="absolute -top-1 -left-1 sm:-top-1.5 sm:-left-1.5 z-20 w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 rounded-full bg-rose-600 text-white shadow-sm border border-white flex items-center justify-center pointer-events-none"
             title={`Substituted out${player.subOutMinute ? ` at ${player.subOutMinute}` : ""}`}
           >
-            <ArrowDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3.5]" />
+            <ArrowDown className="w-2 h-2 sm:w-2.5 sm:h-2.5 stroke-[3.5]" />
           </div>
         )}
 
         {/* Top-Right: Card badge (Vertical rectangular penalty card ~2:3 aspect ratio) */}
         {(player.yellowCards || player.redCards) && (
-          <div className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 z-20 flex items-center gap-0.5 pointer-events-none">
+          <div className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 z-20 flex items-center gap-0.5 pointer-events-none">
             {player.redCards && player.redCards > 0 ? (
               <div
-                className="w-3 h-4.5 sm:w-3.5 sm:h-5 rounded-[1px] bg-rose-600 shadow-md border border-white/90 ring-1 ring-rose-950/40"
+                className="w-2.5 h-3.5 sm:w-3 sm:h-4.5 rounded-[1px] bg-rose-600 shadow-sm border border-white/90 ring-1 ring-rose-950/40"
                 title="Red Card"
               />
             ) : player.yellowCards && player.yellowCards > 0 ? (
               <div
-                className="w-3 h-4.5 sm:w-3.5 sm:h-5 rounded-[1px] bg-amber-400 shadow-md border border-white/90 ring-1 ring-amber-600/40"
+                className="w-2.5 h-3.5 sm:w-3 sm:h-4.5 rounded-[1px] bg-amber-400 shadow-sm border border-white/90 ring-1 ring-amber-600/40"
                 title="Yellow Card"
               />
             ) : null}
           </div>
         )}
 
-        {/* Bottom-Left: Assist badge (Proportionately enlarged) */}
+        {/* Bottom-Left: Assist badge */}
         {player.assists && player.assists > 0 && (
           <div
-            className="absolute -bottom-1 -left-1.5 sm:-bottom-1.5 sm:-left-2 z-20 px-1.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black bg-blue-600 text-white shadow-md border-1.5 border-white flex items-center gap-0.5 pointer-events-none"
+            className="absolute -bottom-1 -left-1 sm:-bottom-1.5 sm:-left-1.5 z-20 px-1 py-0.2 rounded-full text-[8px] sm:text-[10px] font-black bg-blue-600 text-white shadow-sm border border-white flex items-center gap-0.5 pointer-events-none"
             title={`${player.assists} Assist${player.assists > 1 ? "s" : ""}`}
           >
-            <span className="text-[10px] sm:text-[11px] leading-none">👟</span>
+            <span className="text-[8px] sm:text-[10px] leading-none">👟</span>
             {player.assists > 1 && (
-              <span className="text-[9px] sm:text-[10px] font-black leading-none">{player.assists}</span>
+              <span className="text-[7px] sm:text-[9px] font-black leading-none">{player.assists}</span>
             )}
           </div>
         )}
 
-        {/* Bottom-Right: Goal badge (Proportionately enlarged) */}
+        {/* Bottom-Right: Goal badge */}
         {player.goals && player.goals > 0 && (
           <div
-            className="absolute -bottom-1 -right-1.5 sm:-bottom-1.5 sm:-right-2 z-20 px-1.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black bg-emerald-600 text-white shadow-md border-1.5 border-white flex items-center gap-0.5 pointer-events-none"
+            className="absolute -bottom-1 -right-1 sm:-bottom-1.5 sm:-right-1.5 z-20 px-1 py-0.2 rounded-full text-[8px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm border border-white flex items-center gap-0.5 pointer-events-none"
             title={`${player.goals} Goal${player.goals > 1 ? "s" : ""}`}
           >
-            <span className="text-[10px] sm:text-[11px] leading-none">⚽</span>
+            <span className="text-[8px] sm:text-[10px] leading-none">⚽</span>
             {player.goals > 1 && (
-              <span className="text-[9px] sm:text-[10px] font-black leading-none">{player.goals}</span>
+              <span className="text-[7px] sm:text-[9px] font-black leading-none">{player.goals}</span>
             )}
           </div>
         )}
@@ -340,7 +340,7 @@ export default function MatchDetailPage() {
           />
         ) : (
           <div
-            className={`w-11 h-11 sm:w-13 sm:h-13 rounded-full text-white font-black text-sm sm:text-base border-2 border-white/60 flex items-center justify-center shadow-lg ${
+            className={`w-full h-full rounded-full text-white font-black text-xs sm:text-sm border-1.5 border-white/60 flex items-center justify-center shadow-md ${
               team === "home" ? "bg-indigo-700" : "bg-rose-700"
             }`}
           >
@@ -388,9 +388,9 @@ export default function MatchDetailPage() {
     <div className="min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
       <Header />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-10 pb-28 md:pb-10">
         {/* Top Navigation / Breadcrumbs */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-4 sm:mb-6 flex items-center justify-between">
           <Link
             href="/fixtures"
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-xs transition-colors cursor-pointer"
@@ -400,14 +400,15 @@ export default function MatchDetailPage() {
           </Link>
 
           {match && (
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400">
               <img
                 src={match.leagueLogoUrl}
                 alt={match.leagueName}
+                title={match.leagueName}
                 className="w-4 h-4 object-contain"
               />
-              <span>{match.leagueName}</span>
-              <span>•</span>
+              <span className="hidden sm:inline">{match.leagueName}</span>
+              <span className="hidden sm:inline">•</span>
               <span className="font-mono">Season {match.seasonYear}/{match.seasonYear + 1}</span>
             </div>
           )}
@@ -442,11 +443,11 @@ export default function MatchDetailPage() {
 
         {/* Main Content (Unrestricted, Natural Window Scrolling) */}
         {!loading && match && (
-          <div className="space-y-8">
-            {/* Scoreboard Card */}
-            <div className="bg-white dark:bg-slate-900/90 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm dark:shadow-xl">
+          <div className="space-y-6 sm:space-y-8">
+            {/* Scoreboard Card (Blends with background on mobile) */}
+            <div className="bg-transparent md:bg-white md:dark:bg-slate-900/90 md:backdrop-blur-md border-0 md:border md:border-slate-200 md:dark:border-slate-800 rounded-none md:rounded-3xl p-1 sm:p-8 shadow-none md:shadow-sm md:dark:shadow-xl">
               {/* League & Date Header */}
-              <div className="flex items-center justify-center gap-2 mb-6">
+              <div className="flex items-center justify-center gap-2 mb-4 sm:mb-6">
                 <img
                   src={match.leagueLogoUrl}
                   alt={match.leagueName}
@@ -464,44 +465,44 @@ export default function MatchDetailPage() {
                 </span>
               </div>
 
-              {/* Clubs & Scores Display (Strictly Balanced 3-Column Symmetrical Layout) */}
-              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-6 max-w-3xl mx-auto my-3">
-                {/* Left Column (Home Team): Horizontally aligned towards center (justify-end items-center) */}
-                <div className="flex items-center justify-end gap-2.5 sm:gap-4 min-w-0">
-                  <div className="flex flex-col items-end text-right min-w-0">
-                    <h2 className="text-sm sm:text-2xl font-black text-slate-900 dark:text-white truncate">
-                      {match.homeTeam.shortDisplayName}
-                    </h2>
-                    <span className="text-[10px] sm:text-xs font-semibold text-slate-400 dark:text-slate-500">
-                      Home
-                    </span>
-                  </div>
-                  <div className="w-12 h-12 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0">
+              {/* Clubs & Scores Display (Uncramped responsive layout) */}
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-6 max-w-3xl mx-auto my-3">
+                {/* Left Column (Home Team) */}
+                <div className="flex flex-col items-center text-center sm:flex-row sm:justify-end sm:text-right gap-1.5 sm:gap-4 min-w-0">
+                  <div className="w-12 h-12 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0 sm:order-2">
                     <img
                       src={match.homeTeam.logoUrl}
                       alt={match.homeTeam.shortDisplayName}
                       className="max-w-full max-h-full object-contain drop-shadow-md"
                     />
                   </div>
+                  <div className="flex flex-col items-center sm:items-end text-center sm:text-right min-w-0 sm:order-1">
+                    <h2 className="text-xs sm:text-2xl font-black text-slate-900 dark:text-white line-clamp-2 sm:truncate">
+                      {match.homeTeam.shortDisplayName}
+                    </h2>
+                    <span className="text-[10px] sm:text-xs font-semibold text-slate-400 dark:text-slate-500">
+                      Home
+                    </span>
+                  </div>
                 </div>
 
-                {/* Center Column (Score): Perfectly centered horizontally & vertically */}
-                <div className="flex items-center justify-center px-2 sm:px-6 flex-shrink-0">
-                  <div className="flex items-center gap-2 sm:gap-4 leading-none">
-                    <span className="text-3xl sm:text-6xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
+                {/* Center Column (Score): Centered horizontally & vertically */}
+                <div className="flex items-center justify-center px-1 sm:px-6 flex-shrink-0">
+                  <div className="flex items-center gap-1.5 sm:gap-4 leading-none">
+                    <span className="text-2xl sm:text-6xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
                       {match.homeScore}
                     </span>
-                    <span className="text-slate-300 dark:text-slate-600 font-light text-xl sm:text-4xl pb-0.5">
+                    <span className="text-slate-300 dark:text-slate-600 font-light text-lg sm:text-4xl pb-0.5">
                       -
                     </span>
-                    <span className="text-3xl sm:text-6xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
+                    <span className="text-2xl sm:text-6xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
                       {match.awayScore}
                     </span>
                   </div>
                 </div>
 
-                {/* Right Column (Away Team): Horizontally aligned towards center (justify-start items-center) */}
-                <div className="flex items-center justify-start gap-2.5 sm:gap-4 min-w-0">
+                {/* Right Column (Away Team) */}
+                <div className="flex flex-col items-center text-center sm:flex-row sm:justify-start sm:text-left gap-1.5 sm:gap-4 min-w-0">
                   <div className="w-12 h-12 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0">
                     <img
                       src={match.awayTeam.logoUrl}
@@ -509,8 +510,8 @@ export default function MatchDetailPage() {
                       className="max-w-full max-h-full object-contain drop-shadow-md"
                     />
                   </div>
-                  <div className="flex flex-col items-start text-left min-w-0">
-                    <h2 className="text-sm sm:text-2xl font-black text-slate-900 dark:text-white truncate">
+                  <div className="flex flex-col items-center sm:items-start text-center sm:text-left min-w-0">
+                    <h2 className="text-xs sm:text-2xl font-black text-slate-900 dark:text-white line-clamp-2 sm:truncate">
                       {match.awayTeam.shortDisplayName}
                     </h2>
                     <span className="text-[10px] sm:text-xs font-semibold text-slate-400 dark:text-slate-500">
@@ -520,43 +521,43 @@ export default function MatchDetailPage() {
                 </div>
               </div>
 
-              {/* Goalscorers Row */}
-              <div className="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800/80 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs max-w-2xl mx-auto">
+              {/* Goalscorers Row (Balanced 2 columns aligned with teams) */}
+              <div className="mt-6 pt-5 border-t border-slate-200/80 dark:border-slate-800/80 grid grid-cols-2 gap-2 sm:gap-6 text-xs max-w-2xl mx-auto">
                 {/* Home Scorers */}
-                <div className="flex flex-col items-center sm:items-end text-center sm:text-right space-y-1.5">
+                <div className="flex flex-col items-end text-right space-y-1 sm:space-y-1.5 pr-1 sm:pr-0">
                   {homeScorers.length > 0 ? (
                     homeScorers.map((s, idx) => (
                       <div
                         key={idx}
-                        className="inline-flex items-center gap-1.5 text-slate-800 dark:text-slate-200"
+                        className="inline-flex items-center gap-1 sm:gap-1.5 text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs"
                       >
-                        <span className="font-semibold">{s.athleteName}</span>
-                        <span className="text-slate-500 dark:text-slate-400 font-mono">
+                        <span className="font-semibold truncate max-w-[85px] sm:max-w-none">{s.athleteName}</span>
+                        <span className="text-slate-500 dark:text-slate-400 font-mono text-[10px] sm:text-xs">
                           {s.minute}
                           {s.penaltyKick ? " (P)" : ""}
                           {s.ownGoal ? " (OG)" : ""}
                         </span>
-                        <span className="text-[13px]">⚽</span>
+                        <span className="text-xs sm:text-[13px]">⚽</span>
                       </div>
                     ))
                   ) : (
-                    <span className="text-slate-400 dark:text-slate-600 italic">
+                    <span className="text-slate-400 dark:text-slate-600 italic text-[11px] sm:text-xs">
                       No home goals
                     </span>
                   )}
                 </div>
 
                 {/* Away Scorers */}
-                <div className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-1.5">
+                <div className="flex flex-col items-start text-left space-y-1 sm:space-y-1.5 pl-1 sm:pl-0">
                   {awayScorers.length > 0 ? (
                     awayScorers.map((s, idx) => (
                       <div
                         key={idx}
-                        className="inline-flex items-center gap-1.5 text-slate-800 dark:text-slate-200"
+                        className="inline-flex items-center gap-1 sm:gap-1.5 text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs"
                       >
-                        <span className="text-[13px]">⚽</span>
-                        <span className="font-semibold">{s.athleteName}</span>
-                        <span className="text-slate-500 dark:text-slate-400 font-mono">
+                        <span className="text-xs sm:text-[13px]">⚽</span>
+                        <span className="font-semibold truncate max-w-[85px] sm:max-w-none">{s.athleteName}</span>
+                        <span className="text-slate-500 dark:text-slate-400 font-mono text-[10px] sm:text-xs">
                           {s.minute}
                           {s.penaltyKick ? " (P)" : ""}
                           {s.ownGoal ? " (OG)" : ""}
@@ -564,7 +565,7 @@ export default function MatchDetailPage() {
                       </div>
                     ))
                   ) : (
-                    <span className="text-slate-400 dark:text-slate-600 italic">
+                    <span className="text-slate-400 dark:text-slate-600 italic text-[11px] sm:text-xs">
                       No away goals
                     </span>
                   )}
@@ -572,7 +573,7 @@ export default function MatchDetailPage() {
               </div>
 
               {/* Scoreboard Card Footer: Stadium (Left) & Attendance (Right) */}
-              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <div className="mt-5 pt-3.5 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-1.5 min-w-0">
                   <MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                   <span className="font-medium truncate">{match.venue || "Stadium"}</span>
@@ -612,9 +613,9 @@ export default function MatchDetailPage() {
               </button>
             </div>
 
-            {/* TAB 1: MATCH STATS (Natural Height, No Scrollboxes) */}
+            {/* TAB 1: MATCH STATS (Blends with background on mobile) */}
             {activeTab === "stats" && (
-              <div className="bg-white dark:bg-slate-900/90 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm dark:shadow-xl">
+              <div className="bg-transparent md:bg-white md:dark:bg-slate-900/90 md:backdrop-blur-md border-0 md:border md:border-slate-200 md:dark:border-slate-800 rounded-none md:rounded-3xl p-1 sm:p-10 shadow-none md:shadow-sm md:dark:shadow-xl">
                 {match.statsData && match.statsData.length > 0 ? (
                   <div className="max-w-2xl mx-auto space-y-6">
                     {match.statsData.map((stat, idx) => {
@@ -670,9 +671,9 @@ export default function MatchDetailPage() {
               </div>
             )}
 
-            {/* TAB 2: LINEUPS & TACTICAL PITCH (Natural Height, 3-Way Switcher) */}
+            {/* TAB 2: LINEUPS & TACTICAL PITCH (Blends with background on mobile) */}
             {activeTab === "lineups" && (
-              <div className="bg-white dark:bg-slate-900/90 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm dark:shadow-xl space-y-8">
+              <div className="bg-transparent md:bg-white md:dark:bg-slate-900/90 md:backdrop-blur-md border-0 md:border md:border-slate-200 md:dark:border-slate-800 rounded-none md:rounded-3xl p-0 sm:p-10 shadow-none md:shadow-sm md:dark:shadow-xl space-y-6 sm:space-y-8">
                 {/* 3-Way Lineup Switcher */}
                 {rosters.length >= 2 && (
                   <div className="flex items-center justify-center">
@@ -680,7 +681,7 @@ export default function MatchDetailPage() {
                       {/* All Button */}
                       <button
                         onClick={() => setLineupMode("all")}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           lineupMode === "all"
                             ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
                             : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
@@ -692,7 +693,7 @@ export default function MatchDetailPage() {
                       {/* Home Team Button */}
                       <button
                         onClick={() => setLineupMode("home")}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           lineupMode === "home"
                             ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
                             : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
@@ -707,7 +708,7 @@ export default function MatchDetailPage() {
                       {/* Away Team Button */}
                       <button
                         onClick={() => setLineupMode("away")}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           lineupMode === "away"
                             ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
                             : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
@@ -724,7 +725,7 @@ export default function MatchDetailPage() {
 
                 {/* Tactical Pitch Board Canvas */}
                 {rosters.length >= 2 ? (
-                  <div className="relative w-full max-w-2xl mx-auto rounded-3xl overflow-hidden border border-slate-700/60 shadow-2xl bg-[#1e4a28] aspect-[682/1174]">
+                  <div className="relative w-full max-w-2xl mx-auto rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-700/60 shadow-xl bg-[#1e4a28] aspect-[682/1174]">
                     {/* Photorealistic Pitch Graphic Background */}
                     <img
                       src="/pitch.jpg"
@@ -739,10 +740,10 @@ export default function MatchDetailPage() {
                     {lineupMode === "all" ? (
                       <>
                         {/* Top Margin (Away Team) */}
-                        <div className="absolute top-3 sm:top-4 left-3.5 sm:left-5 right-3.5 sm:right-5 z-20 flex items-center justify-between pointer-events-none">
-                          <div className="flex items-center gap-2 sm:gap-2.5 pointer-events-auto">
+                        <div className="absolute top-2 sm:top-4 left-2.5 sm:left-5 right-2.5 sm:right-5 z-20 flex items-center justify-between pointer-events-none">
+                          <div className="flex items-center gap-1.5 sm:gap-2.5 pointer-events-auto">
                             {/* Club Logo in solid white square box */}
-                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white p-1 rounded-sm shadow-md flex items-center justify-center flex-shrink-0">
+                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white p-0.5 sm:p-1 rounded-sm shadow-md flex items-center justify-center flex-shrink-0">
                               <img
                                 src={awayRoster.teamLogo || match.awayTeam.logoUrl}
                                 alt={awayRoster.shortDisplayName}
@@ -755,16 +756,16 @@ export default function MatchDetailPage() {
                             </span>
                           </div>
                           {/* Formation Badge in solid green background */}
-                          <div className="px-2.5 py-0.5 sm:py-1 rounded-full sm:rounded-md bg-emerald-800/95 text-white text-[11px] sm:text-xs font-mono font-bold shadow-md pointer-events-auto">
+                          <div className="px-2 py-0.5 sm:py-1 rounded-full sm:rounded-md bg-emerald-800/95 text-white text-[10px] sm:text-xs font-mono font-bold shadow-md pointer-events-auto">
                             {awayRoster.formation}
                           </div>
                         </div>
 
                         {/* Bottom Margin (Home Team) */}
-                        <div className="absolute bottom-3 sm:bottom-4 left-3.5 sm:left-5 right-3.5 sm:right-5 z-20 flex items-center justify-between pointer-events-none">
-                          <div className="flex items-center gap-2 sm:gap-2.5 pointer-events-auto">
+                        <div className="absolute bottom-2 sm:bottom-4 left-2.5 sm:left-5 right-2.5 sm:right-5 z-20 flex items-center justify-between pointer-events-none">
+                          <div className="flex items-center gap-1.5 sm:gap-2.5 pointer-events-auto">
                             {/* Club Logo in solid white square box */}
-                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white p-1 rounded-sm shadow-md flex items-center justify-center flex-shrink-0">
+                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white p-0.5 sm:p-1 rounded-sm shadow-md flex items-center justify-center flex-shrink-0">
                               <img
                                 src={homeRoster.teamLogo || match.homeTeam.logoUrl}
                                 alt={homeRoster.shortDisplayName}
@@ -777,17 +778,17 @@ export default function MatchDetailPage() {
                             </span>
                           </div>
                           {/* Formation Badge in solid green background */}
-                          <div className="px-2.5 py-0.5 sm:py-1 rounded-full sm:rounded-md bg-emerald-800/95 text-white text-[11px] sm:text-xs font-mono font-bold shadow-md pointer-events-auto">
+                          <div className="px-2 py-0.5 sm:py-1 rounded-full sm:rounded-md bg-emerald-800/95 text-white text-[10px] sm:text-xs font-mono font-bold shadow-md pointer-events-auto">
                             {homeRoster.formation}
                           </div>
                         </div>
                       </>
                     ) : (
                       /* Single Team Mode: Active Team at Top Margin */
-                      <div className="absolute top-3 sm:top-4 left-3.5 sm:left-5 right-3.5 sm:right-5 z-20 flex items-center justify-between pointer-events-none">
-                        <div className="flex items-center gap-2 sm:gap-2.5 pointer-events-auto">
+                      <div className="absolute top-2 sm:top-4 left-2.5 sm:left-5 right-2.5 sm:right-5 z-20 flex items-center justify-between pointer-events-none">
+                        <div className="flex items-center gap-1.5 sm:gap-2.5 pointer-events-auto">
                           {/* Club Logo in solid white square box */}
-                          <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white p-1 rounded-sm shadow-md flex items-center justify-center flex-shrink-0">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white p-0.5 sm:p-1 rounded-sm shadow-md flex items-center justify-center flex-shrink-0">
                             <img
                               src={
                                 lineupMode === "home"
@@ -810,7 +811,7 @@ export default function MatchDetailPage() {
                           </span>
                         </div>
                         {/* Formation Badge in solid green background */}
-                        <div className="px-2.5 py-0.5 sm:py-1 rounded-full sm:rounded-md bg-emerald-800/95 text-white text-[11px] sm:text-xs font-mono font-bold shadow-md pointer-events-auto">
+                        <div className="px-2 py-0.5 sm:py-1 rounded-full sm:rounded-md bg-emerald-800/95 text-white text-[10px] sm:text-xs font-mono font-bold shadow-md pointer-events-auto">
                           {lineupMode === "home"
                             ? homeRoster.formation
                             : awayRoster.formation}
@@ -837,7 +838,7 @@ export default function MatchDetailPage() {
 
                               {/* Player Name Label (Clean text with text-shadow, no background container) */}
                               <span
-                                className="text-white font-medium text-[10px] sm:text-[11px] truncate max-w-[85px] sm:max-w-[100px] text-center leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] select-none pointer-events-none"
+                                className="text-white font-medium text-[8px] sm:text-[10px] md:text-[11px] truncate max-w-[50px] sm:max-w-[85px] text-center leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] select-none pointer-events-none"
                                 style={{ textShadow: "0 1px 3px rgba(0, 0, 0, 0.95), 0 1px 2px rgba(0, 0, 0, 0.9)" }}
                               >
                                 {player.shortName || player.name}
@@ -866,7 +867,7 @@ export default function MatchDetailPage() {
 
                               {/* Player Name Label (Clean text with text-shadow, no background container) */}
                               <span
-                                className="text-white font-medium text-[11px] sm:text-xs truncate max-w-[95px] sm:max-w-[110px] text-center leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] select-none pointer-events-none"
+                                className="text-white font-medium text-[9px] sm:text-[11px] md:text-xs truncate max-w-[70px] sm:max-w-[100px] text-center leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] select-none pointer-events-none"
                                 style={{ textShadow: "0 1px 3px rgba(0, 0, 0, 0.95), 0 1px 2px rgba(0, 0, 0, 0.9)" }}
                               >
                                 {player.shortName || player.name}

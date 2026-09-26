@@ -61,12 +61,13 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onSelect }) => {
           <img
             src={match.leagueLogoUrl}
             alt={match.leagueName}
+            title={match.leagueName}
             className="w-5 h-5 object-contain flex-shrink-0"
           />
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">
+          <span className="hidden md:inline text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">
             {match.leagueName}
           </span>
-          <span className="text-slate-300 dark:text-slate-700 text-xs">•</span>
+          <span className="hidden md:inline text-slate-300 dark:text-slate-700 text-xs">•</span>
           <span className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
             {formatMatchDate(match.matchDate)}
           </span>

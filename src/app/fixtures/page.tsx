@@ -86,9 +86,9 @@ export default function FixturesPage() {
     <div className="min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
       <Header />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        {/* Page Hero Header */}
-        <div className="mb-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-10 pb-28 md:pb-10">
+        {/* Page Hero Header (Hidden on mobile) */}
+        <div className="hidden md:block mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 mb-3">
             <Flame className="w-3.5 h-3.5 text-rose-500" />
             <span>Top 10 Highest-Scoring Matches</span>

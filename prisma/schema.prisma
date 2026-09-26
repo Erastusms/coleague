@@ -114,4 +114,17 @@ model Match {
   @@map("matches")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  userType  String   @default("admin") @map("user_type")
+  name      String?
+  email     String?  @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
 

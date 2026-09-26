@@ -9,6 +9,7 @@
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx scripts/seed.ts",
+    "db:seed-admin": "tsx scripts/seed-admin.ts",
     "db:resync": "tsx scripts/resync-teams.ts",
     "db:matches": "tsx scripts/seed-matches.ts"
   },
