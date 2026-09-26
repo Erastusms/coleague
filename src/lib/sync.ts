@@ -71,135 +71,138 @@ export async function syncColeagueData(
           // A. Fetch and store standings
           const standingsEntries = await fetchLeagueStandings(league.slug, year);
 
-          for (const entry of standingsEntries) {
-            // Upsert team
-            await prisma.team.upsert({
-              where: { id: entry.teamId },
-              update: {
-                leagueId: league.slug,
-                name: entry.teamName,
-                shortDisplayName: entry.shortDisplayName,
-                logoUrl: entry.logoUrl,
-              },
-              create: {
-                id: entry.teamId,
-                leagueId: league.slug,
-                name: entry.teamName,
-                shortDisplayName: entry.shortDisplayName,
-                logoUrl: entry.logoUrl,
-              },
-            });
-            teamsUpserted++;
+          // Upsert teams & standings concurrently
+          await Promise.all(
+            standingsEntries.map(async (entry) => {
+              await prisma.team.upsert({
+                where: { id: entry.teamId },
+                update: {
+                  leagueId: league.slug,
+                  name: entry.teamName,
+                  shortDisplayName: entry.shortDisplayName,
+                  logoUrl: entry.logoUrl,
+                },
+                create: {
+                  id: entry.teamId,
+                  leagueId: league.slug,
+                  name: entry.teamName,
+                  shortDisplayName: entry.shortDisplayName,
+                  logoUrl: entry.logoUrl,
+                },
+              });
+              teamsUpserted++;
 
-            // Upsert standing
-            await prisma.standing.upsert({
-              where: {
-                teamId_seasonId: {
+              await prisma.standing.upsert({
+                where: {
+                  teamId_seasonId: {
+                    teamId: entry.teamId,
+                    seasonId,
+                  },
+                },
+                update: {
+                  rank: entry.rank,
+                  points: entry.points,
+                  gamesPlayed: entry.gamesPlayed,
+                  wins: entry.wins,
+                  draws: entry.draws,
+                  losses: entry.losses,
+                  goalDifference: entry.goalDifference,
+                  goalsFor: entry.goalsFor,
+                  goalsAgainst: entry.goalsAgainst,
+                  form: entry.form,
+                  updatedAt: new Date(),
+                },
+                create: {
                   teamId: entry.teamId,
                   seasonId,
+                  rank: entry.rank,
+                  points: entry.points,
+                  gamesPlayed: entry.gamesPlayed,
+                  wins: entry.wins,
+                  draws: entry.draws,
+                  losses: entry.losses,
+                  goalDifference: entry.goalDifference,
+                  goalsFor: entry.goalsFor,
+                  goalsAgainst: entry.goalsAgainst,
+                  form: entry.form,
                 },
-              },
-              update: {
-                rank: entry.rank,
-                points: entry.points,
-                gamesPlayed: entry.gamesPlayed,
-                wins: entry.wins,
-                draws: entry.draws,
-                losses: entry.losses,
-                goalDifference: entry.goalDifference,
-                goalsFor: entry.goalsFor,
-                goalsAgainst: entry.goalsAgainst,
-                form: entry.form,
-                updatedAt: new Date(),
-              },
-              create: {
-                teamId: entry.teamId,
-                seasonId,
-                rank: entry.rank,
-                points: entry.points,
-                gamesPlayed: entry.gamesPlayed,
-                wins: entry.wins,
-                draws: entry.draws,
-                losses: entry.losses,
-                goalDifference: entry.goalDifference,
-                goalsFor: entry.goalsFor,
-                goalsAgainst: entry.goalsAgainst,
-                form: entry.form,
-              },
-            });
-            standingsUpserted++;
-          }
+              });
+              standingsUpserted++;
+            })
+          );
 
           // B. Fetch and store player statistics
           const leaders = await fetchLeagueStatistics(league.slug, year);
 
-          for (const leader of leaders) {
-            // Ensure player's team exists without clobbering standings shortDisplayName
-            if (leader.teamId) {
-              const existingTeam = await prisma.team.findUnique({
-                where: { id: leader.teamId },
-              });
-
-              if (existingTeam) {
-                await prisma.team.update({
+          await Promise.all(
+            leaders.map(async (leader) => {
+              // Ensure player's team exists without clobbering standings shortDisplayName
+              if (leader.teamId) {
+                const existingTeam = await prisma.team.findUnique({
                   where: { id: leader.teamId },
-                  data: {
-                    leagueId: league.slug,
-                    name: leader.teamName,
-                    logoUrl: leader.teamLogoUrl,
-                    shortDisplayName:
-                      existingTeam.shortDisplayName &&
-                      !existingTeam.shortDisplayName.toLowerCase().includes("internazionale") &&
-                      existingTeam.shortDisplayName !== existingTeam.name
-                        ? existingTeam.shortDisplayName
-                        : leader.teamShortDisplayName,
-                  },
                 });
-              } else {
-                await prisma.team.create({
-                  data: {
-                    id: leader.teamId,
-                    leagueId: league.slug,
-                    name: leader.teamName,
-                    shortDisplayName: leader.teamShortDisplayName,
-                    logoUrl: leader.teamLogoUrl,
-                  },
-                });
-              }
-            }
 
-            // Upsert player stat
-            await prisma.playerStat.upsert({
-              where: {
-                athleteId_seasonId_leagueId: {
-                  athleteId: leader.athleteId,
-                  seasonId,
-                  leagueId: league.slug,
+                if (existingTeam) {
+                  await prisma.team.update({
+                    where: { id: leader.teamId },
+                    data: {
+                      leagueId: league.slug,
+                      name: leader.teamName,
+                      logoUrl: leader.teamLogoUrl,
+                      shortDisplayName:
+                        existingTeam.shortDisplayName &&
+                        !existingTeam.shortDisplayName.toLowerCase().includes("internazionale") &&
+                        existingTeam.shortDisplayName !== existingTeam.name
+                          ? existingTeam.shortDisplayName
+                          : leader.teamShortDisplayName,
+                    },
+                  });
+                } else {
+                  await prisma.team.create({
+                    data: {
+                      id: leader.teamId,
+                      leagueId: league.slug,
+                      name: leader.teamName,
+                      shortDisplayName: leader.teamShortDisplayName,
+                      logoUrl: leader.teamLogoUrl,
+                    },
+                  });
+                }
+              }
+
+              // Upsert player stat
+              await prisma.playerStat.upsert({
+                where: {
+                  athleteId_seasonId_leagueId: {
+                    athleteId: leader.athleteId,
+                    seasonId,
+                    leagueId: league.slug,
+                  },
                 },
-              },
-              update: {
-                athleteName: leader.athleteName,
-                teamId: leader.teamId,
-                goals: leader.goals,
-                assists: leader.assists,
-                appearances: leader.appearances,
-                minutes: leader.minutes,
-                updatedAt: new Date(),
-              },
-              create: {
-                athleteId: leader.athleteId,
-                athleteName: leader.athleteName,
-                teamId: leader.teamId,
-                leagueId: league.slug,
-                seasonId,
-                goals: leader.goals,
-                assists: leader.assists,
-                appearances: leader.appearances,
-                minutes: leader.minutes,
-              },
-            });
-            playerStatsUpserted++;
-          }
+                update: {
+                  athleteName: leader.athleteName,
+                  teamId: leader.teamId,
+                  goals: leader.goals,
+                  assists: leader.assists,
+                  appearances: leader.appearances,
+                  minutes: leader.minutes,
+                  updatedAt: new Date(),
+                },
+                create: {
+                  athleteId: leader.athleteId,
+                  athleteName: leader.athleteName,
+                  teamId: leader.teamId,
+                  leagueId: league.slug,
+                  seasonId,
+                  goals: leader.goals,
+                  assists: leader.assists,
+                  appearances: leader.appearances,
+                  minutes: leader.minutes,
+                },
+              });
+              playerStatsUpserted++;
+            })
+          );
         } catch (err: any) {
           const errMsg = `Failed to sync ${league.slug} for season ${year}: ${err.message}`;
           console.error(errMsg);

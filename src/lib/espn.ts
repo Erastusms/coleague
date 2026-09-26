@@ -8,6 +8,14 @@ const STATISTICS_BASE =
   process.env.ESPN_STATISTICS_BASE_URL ||
   "https://site.api.espn.com/apis/site/v2/sports/soccer";
 
+export const ESPN_HEADERS: HeadersInit = {
+  Accept: "application/json, text/plain, */*",
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+  Referer: "https://www.espn.com/",
+  "Accept-Language": "en-US,en;q=0.9",
+};
+
 export interface ParsedTeamStanding {
   teamId: string;
   teamName: string;
@@ -151,10 +159,7 @@ export async function fetchLeagueStandings(
   const url = `${STANDINGS_BASE}/${leagueSlug}/standings?season=${season}`;
   try {
     const res = await fetch(url, {
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "Coleague/1.0",
-      },
+      headers: ESPN_HEADERS,
       next: { revalidate: 86400 },
     });
 
@@ -260,10 +265,7 @@ export async function fetchLeagueStatistics(
   const url = `${STATISTICS_BASE}/${leagueSlug}/statistics?season=${season}`;
   try {
     const res = await fetch(url, {
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "Coleague/1.0",
-      },
+      headers: ESPN_HEADERS,
       next: { revalidate: 86400 },
     });
 
@@ -458,10 +460,7 @@ export async function fetchLeagueMatches(
       // 2026/2027 Season: Matches from July 1, 2026 to present
       const scoreboardUrl = `${STATISTICS_BASE}/${leagueSlug}/scoreboard`;
       const baseRes = await fetch(scoreboardUrl, {
-        headers: {
-          Accept: "application/json",
-          "User-Agent": "Coleague/1.0",
-        },
+        headers: ESPN_HEADERS,
         next: { revalidate: 3600 },
       });
 
@@ -496,10 +495,7 @@ export async function fetchLeagueMatches(
             try {
               const dayUrl = `${STATISTICS_BASE}/${leagueSlug}/scoreboard?dates=${dt}`;
               const dayRes = await fetch(dayUrl, {
-                headers: {
-                  Accept: "application/json",
-                  "User-Agent": "Coleague/1.0",
-                },
+                headers: ESPN_HEADERS,
                 next: { revalidate: 3600 },
               });
               if (dayRes.ok) {
@@ -518,10 +514,7 @@ export async function fetchLeagueMatches(
       // Prior seasons (e.g. 2025/2026 season)
       const url = `${STATISTICS_BASE}/${leagueSlug}/scoreboard?dates=2026`;
       const res = await fetch(url, {
-        headers: {
-          Accept: "application/json",
-          "User-Agent": "Coleague/1.0",
-        },
+        headers: ESPN_HEADERS,
         next: { revalidate: 3600 },
       });
       if (res.ok) {
@@ -549,10 +542,7 @@ export async function fetchMatchSummary(
   const url = `${STATISTICS_BASE}/${leagueSlug}/summary?event=${eventId}`;
   try {
     const res = await fetch(url, {
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "Coleague/1.0",
-      },
+      headers: ESPN_HEADERS,
       next: { revalidate: 3600 },
     });
 
