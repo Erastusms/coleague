@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { syncColeagueData } from "@/lib/sync";
 
+export const maxDuration = 60; // Allow sufficient serverless execution time for ESPN API sync
+
 function verifyCronSecret(req: NextRequest): boolean {
   const cronSecret = process.env.CRON_SECRET || "your-cron-secret-key";
   const authHeader = req.headers.get("authorization");
