@@ -51,6 +51,7 @@ export default function StandingsPage() {
           standings={standings}
           isLoading={isLoadingStandings}
           totalAvailable={totalAvailableClubs}
+          season={selectedSeason}
         />
       </main>
 

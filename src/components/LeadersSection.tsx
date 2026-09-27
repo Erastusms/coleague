@@ -4,11 +4,13 @@ import React, { useState } from "react";
 import { PlayerLeaderItem } from "@/lib/types";
 import { NakedLeagueLogo } from "./NakedLeagueLogo";
 import { Flame, Award } from "lucide-react";
+import { ShareStoryButton } from "./story/ShareStoryButton";
 
 interface LeadersSectionProps {
   topScorers: PlayerLeaderItem[];
   topAssists: PlayerLeaderItem[];
   isLoading: boolean;
+  season?: number | string;
 }
 
 interface PlayerStackedCellProps {
@@ -61,6 +63,7 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
   topScorers,
   topAssists,
   isLoading,
+  season,
 }) => {
   const showInitialSkeleton =
     isLoading && topScorers.length === 0 && topAssists.length === 0;
@@ -146,12 +149,22 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
                   </p>
                 </div>
               </div>
-              {isLoading && (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/80 text-amber-600 dark:text-amber-400 text-xs font-medium">
-                  <div className="w-3 h-3 rounded-full border-2 border-amber-500/30 border-t-amber-500 dark:border-t-amber-400 animate-spin" />
-                  <span className="text-[10px] font-semibold hidden sm:inline">Updating</span>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                {isLoading && (
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/80 text-amber-600 dark:text-amber-400 text-xs font-medium">
+                    <div className="w-3 h-3 rounded-full border-2 border-amber-500/30 border-t-amber-500 dark:border-t-amber-400 animate-spin" />
+                    <span className="text-[10px] font-semibold hidden sm:inline">Updating</span>
+                  </div>
+                )}
+                <ShareStoryButton
+                  type="scorers"
+                  data={topScorers}
+                  season={season}
+                  label="Story"
+                  size="sm"
+                  variant="gradient"
+                />
+              </div>
             </div>
 
             {/* Table Content & Circular Loading Indicator Area */}
@@ -308,12 +321,22 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
                   </p>
                 </div>
               </div>
-              {isLoading && (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 text-indigo-600 dark:text-indigo-400 text-xs font-medium">
-                  <div className="w-3 h-3 rounded-full border-2 border-indigo-600/30 border-t-indigo-600 dark:border-t-indigo-400 animate-spin" />
-                  <span className="text-[10px] font-semibold hidden sm:inline">Updating</span>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                {isLoading && (
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 text-indigo-600 dark:text-indigo-400 text-xs font-medium">
+                    <div className="w-3 h-3 rounded-full border-2 border-indigo-600/30 border-t-indigo-600 dark:border-t-indigo-400 animate-spin" />
+                    <span className="text-[10px] font-semibold hidden sm:inline">Updating</span>
+                  </div>
+                )}
+                <ShareStoryButton
+                  type="assists"
+                  data={topAssists}
+                  season={season}
+                  label="Story"
+                  size="sm"
+                  variant="gradient"
+                />
+              </div>
             </div>
 
             {/* Table Content & Circular Loading Indicator Area */}

@@ -51,6 +51,7 @@ export default function StatsPage() {
           topScorers={topScorers}
           topAssists={topAssists}
           isLoading={isLoadingLeaders}
+          season={selectedSeason}
         />
       </main>
 

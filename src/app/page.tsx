@@ -58,6 +58,7 @@ export default function HomePage() {
           standings={standings}
           isLoading={isLoadingStandings}
           totalAvailable={totalAvailableClubs}
+          season={selectedSeason}
         />
 
         {/* 2. Top Scorers & Top Assists Section */}
@@ -66,6 +67,7 @@ export default function HomePage() {
             topScorers={topScorers}
             topAssists={topAssists}
             isLoading={isLoadingLeaders}
+            season={selectedSeason}
           />
         </div>
       </main>

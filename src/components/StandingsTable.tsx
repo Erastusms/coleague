@@ -6,17 +6,20 @@ import { ClubBadge } from './ClubBadge';
 import { NakedLeagueLogo } from './NakedLeagueLogo';
 import { FormGuide } from './FormGuide';
 import { Info } from 'lucide-react';
+import { ShareStoryButton } from './story/ShareStoryButton';
 
 interface StandingsTableProps {
   standings: StandingItem[];
   isLoading: boolean;
   totalAvailable: number;
+  season?: number | string;
 }
 
 export const StandingsTable: React.FC<StandingsTableProps> = ({
   standings,
   isLoading,
   totalAvailable,
+  season,
 }) => {
   const showInitialSkeleton =
     isLoading && (!standings || standings.length === 0);
@@ -47,7 +50,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
       )}
 
       {/* Table Header Title */}
-      <div className="px-0 py-3 md:px-6 md:py-4 border-b border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2">
+      <div className="px-0 py-3 md:px-6 md:py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between gap-2">
         <div className="flex items-center gap-3">
           <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
             Standings
@@ -63,24 +66,35 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
           )}
         </div>
 
-        <div className="hidden md:flex text-xs text-slate-500 dark:text-slate-400 items-center gap-1.5 font-medium">
-          {isLoading ? (
-            <>
-              <div className="w-2.5 h-2.5 rounded-full border-2 border-indigo-600/30 border-t-indigo-600 dark:border-indigo-400/30 dark:border-t-indigo-400 animate-spin" />
-              <span className="text-indigo-600 dark:text-indigo-400 font-medium">Updating standings...</span>
-            </>
-          ) : (
-            <>
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>
-                {standings.length > 0
-                  ? standings.length < 20
-                    ? `Displaying all ${standings.length} available clubs`
-                    : `Showing ${standings.length} of ${totalAvailable} clubs`
-                  : 'Loading standings...'}
-              </span>
-            </>
-          )}
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex text-xs text-slate-500 dark:text-slate-400 items-center gap-1.5 font-medium">
+            {isLoading ? (
+              <>
+                <div className="w-2.5 h-2.5 rounded-full border-2 border-indigo-600/30 border-t-indigo-600 dark:border-indigo-400/30 dark:border-t-indigo-400 animate-spin" />
+                <span className="text-indigo-600 dark:text-indigo-400 font-medium">Updating standings...</span>
+              </>
+            ) : (
+              <>
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>
+                  {standings.length > 0
+                    ? standings.length < 20
+                      ? `Displaying all ${standings.length} available clubs`
+                      : `Showing ${standings.length} of ${totalAvailable} clubs`
+                    : 'Loading standings...'}
+                </span>
+              </>
+            )}
+          </div>
+
+          <ShareStoryButton
+            type="standings"
+            data={standings}
+            season={season}
+            label="Story"
+            size="sm"
+            variant="gradient"
+          />
         </div>
       </div>
 
