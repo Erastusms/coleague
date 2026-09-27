@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { DEFAULT_LEAGUES, DEFAULT_SEASON, SeasonYear } from "./constants";
 import {
   StandingItem,
@@ -23,29 +23,50 @@ export function useColeagueFilters() {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const standingsReqId = useRef(0);
+  const leadersReqId = useRef(0);
+
+  const handleSeasonChange = (season: SeasonYear) => {
+    if (season !== selectedSeason) {
+      setIsLoadingStandings(true);
+      setIsLoadingLeaders(true);
+      setSelectedSeason(season);
+    }
+  };
+
   const handleLeagueToggle = (slug: string) => {
     setSelectedLeagues((prev) => {
       if (prev.includes(slug)) {
         if (prev.length === 1) return prev; // Keep at least 1 league selected
+        setIsLoadingStandings(true);
+        setIsLoadingLeaders(true);
         return prev.filter((s) => s !== slug);
       } else {
+        setIsLoadingStandings(true);
+        setIsLoadingLeaders(true);
         return [...prev, slug];
       }
     });
   };
 
   const handleSelectAllLeagues = () => {
-    setSelectedLeagues(DEFAULT_LEAGUES);
+    if (selectedLeagues.length !== DEFAULT_LEAGUES.length) {
+      setIsLoadingStandings(true);
+      setIsLoadingLeaders(true);
+      setSelectedLeagues(DEFAULT_LEAGUES);
+    }
   };
 
   const handleClearLeagues = () => {
-    // When "Reset" is clicked, all five leagues must be selected by default
-    setSelectedLeagues(DEFAULT_LEAGUES);
+    if (selectedLeagues.length !== DEFAULT_LEAGUES.length) {
+      setIsLoadingStandings(true);
+      setIsLoadingLeaders(true);
+      setSelectedLeagues(DEFAULT_LEAGUES);
+    }
   };
 
   const fetchStandings = useCallback(async () => {
-    setIsLoadingStandings(true);
-    setErrorMessage(null);
+    const reqId = ++standingsReqId.current;
     try {
       const leaguesParam = selectedLeagues.join(",");
       const res = await fetch(
@@ -55,18 +76,27 @@ export function useColeagueFilters() {
         throw new Error(`Failed to load standings: ${res.statusText}`);
       }
       const data: StandingsApiResponse = await res.json();
-      setStandings(data.standings || []);
-      setTotalAvailableClubs(data.totalAvailable || 0);
-    } catch (err: any) {
-      console.error(err);
-      setErrorMessage(err.message || "Failed to fetch standings");
+      if (reqId === standingsReqId.current) {
+        setStandings(data.standings || []);
+        setTotalAvailableClubs(data.totalAvailable || 0);
+        setErrorMessage(null);
+      }
+    } catch (err: unknown) {
+      if (reqId === standingsReqId.current) {
+        console.error(err);
+        setErrorMessage(
+          err instanceof Error ? err.message : "Failed to fetch standings"
+        );
+      }
     } finally {
-      setIsLoadingStandings(false);
+      if (reqId === standingsReqId.current) {
+        setIsLoadingStandings(false);
+      }
     }
   }, [selectedSeason, selectedLeagues]);
 
   const fetchLeaders = useCallback(async () => {
-    setIsLoadingLeaders(true);
+    const reqId = ++leadersReqId.current;
     try {
       const leaguesParam = selectedLeagues.join(",");
       const res = await fetch(
@@ -76,29 +106,38 @@ export function useColeagueFilters() {
         throw new Error(`Failed to load leaders: ${res.statusText}`);
       }
       const data: LeadersApiResponse = await res.json();
-      setTopScorers(data.topScorers || []);
-      setTopAssists(data.topAssists || []);
-    } catch (err: any) {
-      console.error(err);
+      if (reqId === leadersReqId.current) {
+        setTopScorers(data.topScorers || []);
+        setTopAssists(data.topAssists || []);
+      }
+    } catch (err: unknown) {
+      if (reqId === leadersReqId.current) {
+        console.error(err);
+      }
     } finally {
-      setIsLoadingLeaders(false);
+      if (reqId === leadersReqId.current) {
+        setIsLoadingLeaders(false);
+      }
     }
   }, [selectedSeason, selectedLeagues]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStandings();
     fetchLeaders();
   }, [fetchStandings, fetchLeaders]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    setIsLoadingStandings(true);
+    setIsLoadingLeaders(true);
     await Promise.all([fetchStandings(), fetchLeaders()]);
     setIsRefreshing(false);
   };
 
   return {
     selectedSeason,
-    setSelectedSeason,
+    setSelectedSeason: handleSeasonChange,
     selectedLeagues,
     handleLeagueToggle,
     handleSelectAllLeagues,

@@ -52,26 +52,62 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
           <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
             Standings
           </h2>
+          {isLoading && (
+            <div
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 text-indigo-600 dark:text-indigo-400"
+              title="Updating standings data"
+            >
+              <div className="w-3.5 h-3.5 rounded-full border-2 border-indigo-600/30 border-t-indigo-600 dark:border-indigo-400/30 dark:border-t-indigo-400 animate-spin" />
+              <span className="text-[11px] font-semibold hidden sm:inline">Updating</span>
+            </div>
+          )}
         </div>
 
         <div className="hidden md:flex text-xs text-slate-500 dark:text-slate-400 items-center gap-1.5 font-medium">
-          <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>
-            {standings.length > 0
-              ? standings.length < 20
-                ? `Displaying all ${standings.length} available clubs`
-                : `Showing ${standings.length} of ${totalAvailable} clubs`
-              : 'Loading standings...'}
-          </span>
+          {isLoading ? (
+            <>
+              <div className="w-2.5 h-2.5 rounded-full border-2 border-indigo-600/30 border-t-indigo-600 dark:border-indigo-400/30 dark:border-t-indigo-400 animate-spin" />
+              <span className="text-indigo-600 dark:text-indigo-400 font-medium">Updating standings...</span>
+            </>
+          ) : (
+            <>
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>
+                {standings.length > 0
+                  ? standings.length < 20
+                    ? `Displaying all ${standings.length} available clubs`
+                    : `Showing ${standings.length} of ${totalAvailable} clubs`
+                  : 'Loading standings...'}
+              </span>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Responsive Horizontal Scroll Wrapper with Stable Gutter and Fixed Min-Height to eliminate scrollbar flash */}
-      <div
-        className="overflow-x-auto custom-scrollbar scrollbar-stable min-h-[380px] md:min-h-[640px]"
-        style={{ scrollbarGutter: 'stable' }}
-      >
-        <table className="w-full text-left border-collapse min-w-[560px] md:min-w-[760px]">
+      {/* Table Content & Circular Loading Indicator Area */}
+      <div className="relative min-h-[380px] md:min-h-[640px]">
+        {/* Circular Loading Indicator Overlay */}
+        {isLoading && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/60 dark:bg-slate-900/60 backdrop-blur-[2px] transition-all duration-200 pointer-events-none"
+          >
+            <div className="flex flex-col items-center gap-3 px-6 py-4 rounded-2xl bg-white/95 dark:bg-slate-800/95 border border-slate-200/80 dark:border-slate-700/80 shadow-2xl shadow-indigo-950/10 dark:shadow-black/50 pointer-events-auto">
+              <div className="w-9 h-9 rounded-full border-[3px] border-indigo-100 dark:border-indigo-950 border-t-indigo-600 dark:border-t-indigo-400 animate-spin" />
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wide">
+                Loading standings...
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Responsive Horizontal Scroll Wrapper with Stable Gutter and Fixed Min-Height to eliminate scrollbar flash */}
+        <div
+          className="overflow-x-auto custom-scrollbar scrollbar-stable min-h-[380px] md:min-h-[640px]"
+          style={{ scrollbarGutter: 'stable' }}
+        >
+          <table className="w-full text-left border-collapse min-w-[560px] md:min-w-[760px]">
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-800 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-950/40 select-none">
               <th className="py-2 md:py-3.5 pl-1 pr-0.5 md:pl-6 md:pr-2 w-7 md:w-14 text-center">
@@ -139,7 +175,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
           </thead>
           <tbody
             className={`divide-y-2 divide-slate-200 dark:divide-slate-800 md:divide-y md:divide-slate-100 md:dark:divide-slate-800/60 text-xs md:text-sm font-medium transition-opacity duration-200 ${
-              isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'
+              isLoading ? 'opacity-40 pointer-events-none' : 'opacity-100'
             }`}
           >
             {showInitialSkeleton
@@ -315,9 +351,10 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
           </tbody>
         </table>
       </div>
-
-      {/* Divider line separating standings section on mobile */}
-      <div className="border-b border-slate-200 dark:border-slate-800/80 my-4 md:hidden" />
     </div>
-  );
+
+    {/* Divider line separating standings section on mobile */}
+    <div className="border-b border-slate-200 dark:border-slate-800/80 my-4 md:hidden" />
+  </div>
+);
 };
