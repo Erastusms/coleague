@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { MatchItem, LineupPlayer, TeamRoster } from "@/types/match";
+import { getLeagueDarkLogo } from "@/lib/constants";
 import {
   ArrowLeft,
   BarChart3,
@@ -405,7 +406,13 @@ export default function MatchDetailPage() {
                 src={match.leagueLogoUrl}
                 alt={match.leagueName}
                 title={match.leagueName}
-                className="w-4 h-4 object-contain"
+                className="w-4 h-4 object-contain dark:hidden"
+              />
+              <img
+                src={match.leagueDarkLogoUrl || getLeagueDarkLogo(match.leagueSlug || match.leagueLogoUrl)}
+                alt={match.leagueName}
+                title={match.leagueName}
+                className="w-4 h-4 object-contain hidden dark:block"
               />
               <span className="hidden sm:inline">{match.leagueName}</span>
               <span className="hidden sm:inline">•</span>
@@ -451,7 +458,12 @@ export default function MatchDetailPage() {
                 <img
                   src={match.leagueLogoUrl}
                   alt={match.leagueName}
-                  className="w-5 h-5 object-contain"
+                  className="w-5 h-5 object-contain dark:hidden"
+                />
+                <img
+                  src={match.leagueDarkLogoUrl || getLeagueDarkLogo(match.leagueSlug || match.leagueLogoUrl)}
+                  alt={match.leagueName}
+                  className="w-5 h-5 object-contain hidden dark:block"
                 />
                 <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
                   {match.leagueName}

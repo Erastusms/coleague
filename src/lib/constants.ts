@@ -4,6 +4,7 @@ export interface LeagueConfig {
   shortName: string;
   country: string;
   logoUrl: string;
+  darkLogoUrl: string;
   accentColor: string;
   badgeBg: string;
 }
@@ -15,6 +16,7 @@ export const LEAGUES: LeagueConfig[] = [
     shortName: "EPL",
     country: "England",
     logoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500/23.png",
+    darkLogoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png",
     accentColor: "#38003c",
     badgeBg: "rgba(56, 0, 60, 0.2)",
   },
@@ -24,6 +26,7 @@ export const LEAGUES: LeagueConfig[] = [
     shortName: "LaLiga",
     country: "Spain",
     logoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500/15.png",
+    darkLogoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/15.png",
     accentColor: "#ee8707",
     badgeBg: "rgba(238, 135, 7, 0.2)",
   },
@@ -33,6 +36,7 @@ export const LEAGUES: LeagueConfig[] = [
     shortName: "Serie A",
     country: "Italy",
     logoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500/12.png",
+    darkLogoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/12.png",
     accentColor: "#024494",
     badgeBg: "rgba(2, 68, 148, 0.2)",
   },
@@ -42,6 +46,7 @@ export const LEAGUES: LeagueConfig[] = [
     shortName: "Bundesliga",
     country: "Germany",
     logoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500/10.png",
+    darkLogoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/10.png",
     accentColor: "#d20515",
     badgeBg: "rgba(210, 5, 21, 0.2)",
   },
@@ -51,6 +56,7 @@ export const LEAGUES: LeagueConfig[] = [
     shortName: "Ligue 1",
     country: "France",
     logoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500/9.png",
+    darkLogoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/9.png",
     accentColor: "#091c3e",
     badgeBg: "rgba(9, 28, 62, 0.2)",
   },
@@ -62,3 +68,24 @@ export type SeasonYear = (typeof SEASONS)[number];
 export const DEFAULT_SEASON = 2026;
 
 export const DEFAULT_LEAGUES = LEAGUES.map((l) => l.slug);
+
+/**
+ * Helper to retrieve dark mode logo URL for a given league slug, name, or standard logo URL.
+ */
+export function getLeagueDarkLogo(identifier?: string | null): string {
+  if (!identifier) return "";
+  const match = LEAGUES.find(
+    (l) =>
+      l.slug === identifier ||
+      l.name === identifier ||
+      l.shortName === identifier ||
+      l.logoUrl === identifier
+  );
+  if (match?.darkLogoUrl) return match.darkLogoUrl;
+
+  if (identifier.includes("/500/")) {
+    return identifier.replace("/500/", "/500-dark/");
+  }
+
+  return identifier;
+}

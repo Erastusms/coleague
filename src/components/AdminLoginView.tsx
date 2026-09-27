@@ -20,6 +20,7 @@ import {
   Flame,
   Activity,
   Layers,
+  Calendar,
 } from "lucide-react";
 import { LEAGUES, SEASONS } from "@/lib/constants";
 import { ThemeToggle } from "./ThemeToggle";
@@ -36,8 +37,10 @@ interface DbStats {
   teamCount: number;
   standingsCount: number;
   playerStatsCount: number;
+  matchesCount?: number;
   lastStandingUpdated: string | null;
   lastPlayerStatUpdated: string | null;
+  lastMatchUpdated?: string | null;
 }
 
 interface SyncResponseResult {
@@ -74,6 +77,26 @@ export function AdminLoginView() {
   const [selectedLeagues, setSelectedLeagues] = useState<string[]>(
     LEAGUES.map((l) => l.slug)
   );
+
+  // Match Fixtures Sync state
+  const [matchSeason, setMatchSeason] = useState<number>(2026);
+  const [matchLeague, setMatchLeague] = useState<string>("eng.1");
+  const [isSyncingMatches, setIsSyncingMatches] = useState(false);
+  const [matchSyncResult, setMatchSyncResult] = useState<{
+    success: boolean;
+    message: string;
+    result?: {
+      season: number;
+      leagueSlug: string;
+      leagueName: string;
+      matchesIngested: number;
+      teamsUpserted: number;
+      summariesFetched: number;
+      durationSeconds: number;
+      errors: string[];
+    };
+  } | null>(null);
+  const [matchSyncError, setMatchSyncError] = useState<string | null>(null);
 
   // Database metrics
   const [dbStats, setDbStats] = useState<DbStats | null>(null);
@@ -255,6 +278,54 @@ export function AdminLoginView() {
           : prev
         : [...prev, slug]
     );
+  };
+
+  const handleSyncMatches = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setMatchSyncError(null);
+    setMatchSyncResult(null);
+    setIsSyncingMatches(true);
+
+    try {
+      const payload: {
+        username?: string;
+        password?: string;
+        season: number;
+        league: string;
+      } = {
+        season: matchSeason,
+        league: matchLeague,
+      };
+
+      if (!adminUser && username && password) {
+        payload.username = username;
+        payload.password = password;
+      }
+
+      const res = await fetch("/api/admin/sync-matches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMatchSyncError(data.error || "Failed to sync match fixtures from ESPN API.");
+      } else {
+        setMatchSyncResult({
+          success: data.success,
+          message: data.message,
+          result: data.result,
+        });
+        fetchDbStats();
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Network error while syncing match fixtures.";
+      setMatchSyncError(msg);
+    } finally {
+      setIsSyncingMatches(false);
+    }
   };
 
   return (
@@ -508,7 +579,7 @@ export function AdminLoginView() {
             </div>
 
             {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
@@ -557,6 +628,23 @@ export function AdminLoginView() {
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                   Individual Player Statistics
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    Match Fixtures
+                  </span>
+                  <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400">
+                    <Calendar className="w-4 h-4" />
+                  </div>
+                </div>
+                <div className="mt-2 text-2xl font-black text-slate-900 dark:text-white">
+                  {isLoadingStats ? "..." : dbStats?.matchesCount ?? "—"}
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                  Full Scoreboards & Thrillers
                 </div>
               </div>
 
@@ -790,6 +878,201 @@ export function AdminLoginView() {
                       </ul>
                     </div>
                   )}
+                </div>
+              )}
+            </div>
+
+            {/* ===================================================== */}
+            {/* MATCH FIXTURES SYNCHRONIZATION CARD (BY SEASON & LEAGUE) */}
+            {/* ===================================================== */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-md relative overflow-hidden">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-200 dark:border-slate-800">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 text-xs font-bold mb-2">
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Match Fixtures Ingestion (1 Season & 1 League at a time)</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
+                    Sync Match Fixtures & Thrillers
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                    Ingests full season scoreboards, home/away scores, and pre-caches the top 10 highest-scoring fixtures with full rosters and goalscorers. To ensure reliability and avoid serverless timeouts, sync runs <strong>one season and one league at a time</strong>.
+                  </p>
+                </div>
+
+                {/* Match Sync Action Button */}
+                <div className="flex-shrink-0">
+                  <button
+                    onClick={() => handleSyncMatches()}
+                    disabled={isSyncingMatches || isSyncing}
+                    className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-500 hover:via-orange-500 hover:to-rose-500 text-white font-bold text-sm shadow-lg shadow-orange-600/30 flex items-center justify-center gap-2.5 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none cursor-pointer"
+                  >
+                    <RefreshCw
+                      className={`w-4 h-4 ${isSyncingMatches ? "animate-spin text-white" : ""}`}
+                    />
+                    <span>
+                      {isSyncingMatches
+                        ? `Syncing ${matchSeason} ${LEAGUES.find((l) => l.slug === matchLeague)?.shortName || matchLeague}...`
+                        : `Sync ${matchSeason} ${LEAGUES.find((l) => l.slug === matchLeague)?.shortName || matchLeague} Matches`}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Match Sync Configuration Controls */}
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Target Season (Single Selection) */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                    Target Season
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {SEASONS.map((year) => {
+                      const isSelected = matchSeason === year;
+                      return (
+                        <button
+                          key={year}
+                          type="button"
+                          onClick={() => setMatchSeason(year)}
+                          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                            isSelected
+                              ? "bg-amber-600 text-white shadow-sm shadow-amber-600/30 ring-2 ring-amber-400/50"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                          }`}
+                        >
+                          {year} Season
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+                    Choose which season's matches to ingest (e.g. 2023, 2024, 2025, 2026).
+                  </p>
+                </div>
+
+                {/* Target League (Single Selection) */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                    Target League (Top 5)
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {LEAGUES.map((league) => {
+                      const isSelected = matchLeague === league.slug;
+                      return (
+                        <button
+                          key={league.slug}
+                          type="button"
+                          onClick={() => setMatchLeague(league.slug)}
+                          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                            isSelected
+                              ? "bg-amber-600 text-white shadow-sm shadow-amber-600/30 ring-2 ring-amber-400/50"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                          }`}
+                        >
+                          <span>{league.shortName}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+                    Sync one league at a time to keep execution within serverless limits.
+                  </p>
+                </div>
+              </div>
+
+              {/* Match Sync In-Progress Alert */}
+              {isSyncingMatches && (
+                <div className="mt-6 p-4 rounded-xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 flex items-center gap-3">
+                  <RefreshCw className="w-5 h-5 text-amber-600 dark:text-amber-400 animate-spin flex-shrink-0" />
+                  <div>
+                    <h4 className="text-xs font-bold text-amber-900 dark:text-amber-200">
+                      Syncing Match Data from ESPN...
+                    </h4>
+                    <p className="text-xs text-amber-700 dark:text-amber-300/90 mt-0.5">
+                      Ingesting ~380 match scoreboards and pre-caching tactical summaries for top scoring matches. This takes roughly 5 to 10 seconds.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Match Sync Error Alert */}
+              {matchSyncError && (
+                <div className="mt-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="text-xs font-bold text-rose-900 dark:text-rose-200">
+                      Match Sync Failed
+                    </h4>
+                    <p className="text-xs text-rose-700 dark:text-rose-300 mt-0.5">
+                      {matchSyncError}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Match Sync Success Detailed Results Card */}
+              {matchSyncResult && (
+                <div className="mt-6 p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/80">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                    <h4 className="text-sm font-bold text-emerald-900 dark:text-emerald-200">
+                      {matchSyncResult.message}
+                    </h4>
+                  </div>
+
+                  {matchSyncResult.result && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                      <div className="bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900/60">
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                          Target League & Season
+                        </span>
+                        <div className="text-base font-black text-slate-900 dark:text-white mt-0.5 truncate">
+                          {matchSyncResult.result.leagueName} ({matchSyncResult.result.season})
+                        </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900/60">
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                          Matches Ingested
+                        </span>
+                        <div className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+                          +{matchSyncResult.result.matchesIngested}
+                        </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900/60">
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                          Teams Verified / Upserted
+                        </span>
+                        <div className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
+                          {matchSyncResult.result.teamsUpserted}
+                        </div>
+                      </div>
+
+                      <div className="bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900/60">
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                          Top Summaries Pre-cached
+                        </span>
+                        <div className="text-lg font-black text-amber-600 dark:text-amber-400 mt-0.5">
+                          {matchSyncResult.result.summariesFetched}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t border-emerald-200/60 dark:border-emerald-900/40">
+                    <span>
+                      Execution time: {matchSyncResult.result?.durationSeconds}s
+                    </span>
+                    <Link
+                      href="/fixtures"
+                      target="_blank"
+                      className="text-amber-600 dark:text-amber-400 font-semibold hover:underline inline-flex items-center gap-1"
+                    >
+                      <span>Explore Fixtures & Thrillers page</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>

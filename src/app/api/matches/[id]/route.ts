@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/ratelimit";
 import { fetchMatchSummary } from "@/lib/espn";
+import { getLeagueDarkLogo } from "@/lib/constants";
 
 export async function GET(
   req: NextRequest,
@@ -79,6 +80,7 @@ export async function GET(
       leagueSlug: match.league.slug,
       leagueName: match.league.name,
       leagueLogoUrl: match.league.logoUrl,
+      leagueDarkLogoUrl: match.league.darkLogoUrl || getLeagueDarkLogo(match.league.slug),
       seasonYear: match.seasonYear,
       matchDate: match.matchDate.toISOString(),
       status: match.status,

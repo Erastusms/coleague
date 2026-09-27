@@ -13,6 +13,7 @@ model League {
   slug        String       @unique
   name        String
   logoUrl     String       @map("logo_url")
+  darkLogoUrl String?      @map("dark_logo_url")
   teams       Team[]
   playerStats PlayerStat[]
   matches     Match[]

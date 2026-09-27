@@ -83,7 +83,16 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                     <img
                       src={league.logoUrl}
                       alt={league.name}
-                      className={`w-4 h-4 object-contain transition-transform group-hover:scale-110 ${
+                      className={`w-4 h-4 object-contain transition-transform group-hover:scale-110 dark:hidden ${
+                        isSelected
+                          ? "opacity-100 drop-shadow-[0_0_6px_rgba(99,102,241,0.5)]"
+                          : "opacity-45 grayscale group-hover:grayscale-0 group-hover:opacity-80"
+                      }`}
+                    />
+                    <img
+                      src={league.darkLogoUrl}
+                      alt={league.name}
+                      className={`w-4 h-4 object-contain transition-transform group-hover:scale-110 hidden dark:block ${
                         isSelected
                           ? "opacity-100 drop-shadow-[0_0_6px_rgba(99,102,241,0.5)]"
                           : "opacity-45 grayscale group-hover:grayscale-0 group-hover:opacity-80"
@@ -158,7 +167,16 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 <img
                   src={league.logoUrl}
                   alt={league.name}
-                  className={`w-7 h-7 object-contain transition-transform duration-200 ${
+                  className={`w-7 h-7 object-contain transition-transform duration-200 dark:hidden ${
+                    isSelected
+                      ? "opacity-100 drop-shadow-[0_0_6px_rgba(99,102,241,0.5)] scale-105"
+                      : "opacity-40 grayscale"
+                  }`}
+                />
+                <img
+                  src={league.darkLogoUrl}
+                  alt={league.name}
+                  className={`w-7 h-7 object-contain transition-transform duration-200 hidden dark:block ${
                     isSelected
                       ? "opacity-100 drop-shadow-[0_0_6px_rgba(99,102,241,0.5)] scale-105"
                       : "opacity-40 grayscale"

@@ -16,17 +16,24 @@ export async function GET(req: NextRequest) {
       teamCount,
       standingsCount,
       playerStatsCount,
+      matchesCount,
       lastStanding,
       lastPlayerStat,
+      lastMatch,
     ] = await Promise.all([
       prisma.team.count(),
       prisma.standing.count(),
       prisma.playerStat.count(),
+      prisma.match.count(),
       prisma.standing.findFirst({
         orderBy: { updatedAt: "desc" },
         select: { updatedAt: true },
       }),
       prisma.playerStat.findFirst({
+        orderBy: { updatedAt: "desc" },
+        select: { updatedAt: true },
+      }),
+      prisma.match.findFirst({
         orderBy: { updatedAt: "desc" },
         select: { updatedAt: true },
       }),
@@ -38,8 +45,10 @@ export async function GET(req: NextRequest) {
         teamCount,
         standingsCount,
         playerStatsCount,
+        matchesCount,
         lastStandingUpdated: lastStanding?.updatedAt || null,
         lastPlayerStatUpdated: lastPlayerStat?.updatedAt || null,
+        lastMatchUpdated: lastMatch?.updatedAt || null,
       },
     });
   } catch (error: unknown) {

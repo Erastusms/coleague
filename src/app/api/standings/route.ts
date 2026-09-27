@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/ratelimit";
-import { DEFAULT_LEAGUES, DEFAULT_SEASON } from "@/lib/constants";
+import { DEFAULT_LEAGUES, DEFAULT_SEASON, getLeagueDarkLogo } from "@/lib/constants";
 
 export async function GET(req: NextRequest) {
   // 1. Rate Limiting Check (60 req/min per IP)
@@ -99,6 +99,7 @@ export async function GET(req: NextRequest) {
         slug: item.team.league.slug,
         name: item.team.league.name,
         logoUrl: item.team.league.logoUrl,
+        darkLogoUrl: item.team.league.darkLogoUrl || getLeagueDarkLogo(item.team.league.slug),
       },
       gamesPlayed: item.gamesPlayed,
       wins: item.wins,

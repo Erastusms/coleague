@@ -60,6 +60,7 @@ export interface MatchItem {
   leagueSlug: string;
   leagueName: string;
   leagueLogoUrl: string;
+  leagueDarkLogoUrl?: string;
   seasonYear: number;
   matchDate: string;
   status: string;

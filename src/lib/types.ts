@@ -10,6 +10,7 @@ export interface LeagueInfo {
   slug: string;
   name: string;
   logoUrl: string;
+  darkLogoUrl?: string;
 }
 
 export type FormResult = "W" | "D" | "L";

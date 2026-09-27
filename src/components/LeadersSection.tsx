@@ -186,6 +186,7 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
                             <NakedLeagueLogo
                               name={player.league.name}
                               logoUrl={player.league.logoUrl}
+                              darkLogoUrl={player.league.darkLogoUrl}
                               slug={player.league.slug}
                               size={18}
                             />
@@ -313,6 +314,7 @@ export const LeadersSection: React.FC<LeadersSectionProps> = ({
                             <NakedLeagueLogo
                               name={player.league.name}
                               logoUrl={player.league.logoUrl}
+                              darkLogoUrl={player.league.darkLogoUrl}
                               slug={player.league.slug}
                               size={18}
                             />

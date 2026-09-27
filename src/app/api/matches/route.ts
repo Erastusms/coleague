@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/ratelimit";
-import { DEFAULT_LEAGUES, DEFAULT_SEASON } from "@/lib/constants";
+import { DEFAULT_LEAGUES, DEFAULT_SEASON, getLeagueDarkLogo } from "@/lib/constants";
 
 export async function GET(req: NextRequest) {
   // Rate Limiting Check (60 req/min per IP)
@@ -33,25 +33,6 @@ export async function GET(req: NextRequest) {
     : DEFAULT_LEAGUES;
 
   try {
-    // Only seasons 2025 and 2026 have match data
-    if (year !== 2026 && year !== 2025) {
-      return NextResponse.json(
-        {
-          season: year,
-          leagues: selectedLeagues,
-          totalAvailable: 0,
-          returnedCount: 0,
-          matches: [],
-        },
-        {
-          headers: {
-            "X-RateLimit-Limit": String(rl.limit),
-            "X-RateLimit-Remaining": String(rl.remaining),
-          },
-        }
-      );
-    }
-
     const matches = await prisma.match.findMany({
       where: {
         seasonYear: year,
@@ -77,6 +58,7 @@ export async function GET(req: NextRequest) {
       leagueSlug: m.league.slug,
       leagueName: m.league.name,
       leagueLogoUrl: m.league.logoUrl,
+      leagueDarkLogoUrl: m.league.darkLogoUrl || getLeagueDarkLogo(m.league.slug),
       seasonYear: m.seasonYear,
       matchDate: m.matchDate.toISOString(),
       status: m.status,

@@ -7,7 +7,7 @@ import { FilterBar } from "@/components/FilterBar";
 import { MatchCard } from "@/components/MatchCard";
 import { MatchItem } from "@/types/match";
 import { DEFAULT_LEAGUES, DEFAULT_SEASON, SeasonYear, LEAGUES } from "@/lib/constants";
-import { Sparkles, Calendar, Flame, AlertCircle } from "lucide-react";
+import { Sparkles, Calendar, AlertCircle } from "lucide-react";
 
 export default function FixturesPage() {
   const [selectedSeason, setSelectedSeason] = useState<SeasonYear>(DEFAULT_SEASON);
@@ -44,13 +44,6 @@ export default function FixturesPage() {
       setLoading(true);
       setError(null);
 
-      // Only seasons 2025 and 2026 have ingested match records
-      if (selectedSeason !== 2026 && selectedSeason !== 2025) {
-        setMatches([]);
-        setLoading(false);
-        return;
-      }
-
       try {
         const leaguesQuery = selectedLeagues.join(",");
         const res = await fetch(
@@ -86,22 +79,7 @@ export default function FixturesPage() {
     <div className="min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
       <Header />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-10 pb-28 md:pb-10">
-        {/* Page Hero Header (Hidden on mobile) */}
-        <div className="hidden md:block mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 mb-3">
-            <Flame className="w-3.5 h-3.5 text-rose-500" />
-            <span>Top 10 Highest-Scoring Matches</span>
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-            Matchday Fixtures & Thrillers
-          </h1>
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-2 max-w-2xl">
-            Relive the most entertaining, goal-heavy fixtures across Europe. Click any match card to explore comparative team statistics, tactical pitch formations, and full substitution logs.
-          </p>
-        </div>
-
+      <main className="flex-1 max-w-7xl w-full mx-auto px-2 sm:px-6 lg:px-8 py-3 md:py-6 pb-28 md:pb-6">
         {/* Global Filter Bar */}
         <FilterBar
           selectedSeason={selectedSeason}
@@ -157,13 +135,11 @@ export default function FixturesPage() {
             </div>
 
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-              No match data available for this season yet
+              No match data available for this selection yet
             </h3>
 
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto mb-6 leading-relaxed">
-              Match details, tactical lineups, and highest-scoring fixture rankings are available for the{" "}
-              <strong className="text-slate-800 dark:text-slate-200">2026/2027</strong> and{" "}
-              <strong className="text-slate-800 dark:text-slate-200">2025/2026</strong> seasons.
+              Match details, tactical lineups, and highest-scoring fixture rankings appear once match data is ingested for the selected season and leagues. You can sync match fixtures from the Admin Portal.
             </p>
 
             {selectedSeason !== 2026 && (
@@ -179,13 +155,21 @@ export default function FixturesPage() {
         ) : (
           /* Matches Grid (Top 10 Highest-Scoring) */
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
+            <div className="mb-4">
+              {/* Desktop View */}
+              <div className="hidden md:flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Showing Top {matches.length} Matches
                 </span>
                 <span className="text-xs font-mono text-slate-400 dark:text-slate-500">
                   (Sorted by Combined Goals)
+                </span>
+              </div>
+
+              {/* Mobile View */}
+              <div className="flex md:hidden items-center justify-center text-center">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Top 10 Matches with the most goals
                 </span>
               </div>
             </div>

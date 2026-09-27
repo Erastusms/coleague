@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { MatchItem } from "@/types/match";
 import { Sparkles, ChevronRight, MapPin } from "lucide-react";
+import { getLeagueDarkLogo } from "@/lib/constants";
 
 interface MatchCardProps {
   match: MatchItem;
@@ -62,7 +63,13 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onSelect }) => {
             src={match.leagueLogoUrl}
             alt={match.leagueName}
             title={match.leagueName}
-            className="w-5 h-5 object-contain flex-shrink-0"
+            className="w-5 h-5 object-contain flex-shrink-0 dark:hidden"
+          />
+          <img
+            src={match.leagueDarkLogoUrl || getLeagueDarkLogo(match.leagueSlug || match.leagueLogoUrl)}
+            alt={match.leagueName}
+            title={match.leagueName}
+            className="w-5 h-5 object-contain flex-shrink-0 hidden dark:block"
           />
           <span className="hidden md:inline text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">
             {match.leagueName}

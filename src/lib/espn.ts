@@ -46,6 +46,69 @@ export interface ParsedPlayerLeader {
   minutes: number;
 }
 
+export interface ParsedLeagueLogos {
+  logoUrl: string;
+  darkLogoUrl: string;
+}
+
+/**
+ * Fetches league logos from ESPN API scoreboard endpoint,
+ * retrieving both light mode ("default") and dark mode ("dark") logo URLs.
+ * e.g. https://site.api.espn.com/apis/site/v2/sports/soccer/{leagueSlug}/scoreboard
+ */
+export async function fetchLeagueLogos(
+  leagueSlug: string,
+): Promise<ParsedLeagueLogos> {
+  const defaultLogos = LEAGUES.find((l) => l.slug === leagueSlug);
+  const fallbackLight =
+    defaultLogos?.logoUrl ||
+    `https://a.espncdn.com/i/leaguelogos/soccer/500/${leagueSlug}.png`;
+  const fallbackDark =
+    defaultLogos?.darkLogoUrl ||
+    fallbackLight.replace('/500/', '/500-dark/');
+
+  try {
+    const url = `${STATISTICS_BASE}/${leagueSlug}/scoreboard`;
+    const res = await fetch(url, {
+      headers: ESPN_HEADERS,
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      return { logoUrl: fallbackLight, darkLogoUrl: fallbackDark };
+    }
+
+    const data = await res.json();
+    const logos = data.leagues?.[0]?.logos || [];
+
+    // Find light logo: rel contains "default" and NOT "dark", or first item
+    const lightItem =
+      logos.find(
+        (l: any) =>
+          Array.isArray(l.rel) &&
+          l.rel.includes('default') &&
+          !l.rel.includes('dark'),
+      ) ||
+      logos.find((l: any) => Array.isArray(l.rel) && l.rel.includes('default')) ||
+      logos[0];
+
+    // Find dark logo: rel contains "dark"
+    const darkItem = logos.find(
+      (l: any) => Array.isArray(l.rel) && l.rel.includes('dark'),
+    );
+
+    const logoUrl = lightItem?.href || fallbackLight;
+    const darkLogoUrl =
+      darkItem?.href ||
+      (logoUrl.includes('/500/') ? logoUrl.replace('/500/', '/500-dark/') : fallbackDark);
+
+    return { logoUrl, darkLogoUrl };
+  } catch (error) {
+    console.error(`Error fetching league logos for ${leagueSlug}:`, error);
+    return { logoUrl: fallbackLight, darkLogoUrl: fallbackDark };
+  }
+}
+
 export const KNOWN_TEAM_SHORT_NAMES: Record<string, string> = {
   Internazionale: 'Inter Milan',
   Inter: 'Inter Milan',
@@ -165,7 +228,7 @@ export async function fetchLeagueStandings(
   try {
     const res = await fetch(url, {
       headers: ESPN_HEADERS,
-      next: { revalidate: 86400 },
+      cache: 'no-store',
     });
 
     if (!res.ok) {
@@ -271,7 +334,7 @@ export async function fetchLeagueStatistics(
   try {
     const res = await fetch(url, {
       headers: ESPN_HEADERS,
-      next: { revalidate: 86400 },
+      cache: 'no-store',
     });
 
     if (!res.ok) {
@@ -477,77 +540,40 @@ export async function fetchLeagueMatches(
       }
     };
 
-    if (year === 2026) {
-      // 2026/2027 Season: Matches from July 1, 2026 to present
-      const scoreboardUrl = `${STATISTICS_BASE}/${leagueSlug}/scoreboard`;
-      const baseRes = await fetch(scoreboardUrl, {
-        headers: ESPN_HEADERS,
-        next: { revalidate: 3600 },
-      });
+    const startDate = new Date(`${year}-07-01T00:00:00Z`);
+    const endDate = new Date(`${year + 1}-07-01T00:00:00Z`);
 
-      if (!baseRes.ok) {
-        console.error(
-          `Failed to fetch scoreboard base for ${leagueSlug}: ${baseRes.status}`,
-        );
-        return [];
-      }
+    const urls = [
+      `${STATISTICS_BASE}/${leagueSlug}/scoreboard?dates=${year}&limit=1000`,
+    ];
 
-      const baseData = await baseRes.json();
-      const calendar: string[] = baseData.leagues?.[0]?.calendar || [];
-      const now = new Date();
-      const startDate = new Date('2026-07-01T00:00:00Z');
+    if (year < 2026) {
+      urls.push(
+        `${STATISTICS_BASE}/${leagueSlug}/scoreboard?dates=${year + 1}&limit=1000`
+      );
+    }
 
-      const matchDates = calendar
-        .filter((dStr) => {
-          const dt = new Date(dStr);
-          return dt >= startDate && dt <= now;
+    const responses = await Promise.all(
+      urls.map((u) =>
+        fetch(u, {
+          headers: ESPN_HEADERS,
+          cache: 'no-store',
+        }).catch((err) => {
+          console.error(`Error fetching scoreboard URL ${u}:`, err);
+          return null;
         })
-        .map((dStr) => dStr.slice(0, 10).replace(/-/g, ''));
+      )
+    );
 
-      // Also parse any events returned on the base scoreboard call
-      if (baseData.events) {
-        parseEvents(baseData.events);
-      }
-
-      // Fetch match days in chunks of 5 parallel requests
-      const chunkSize = 2;
-      for (let i = 0; i < matchDates.length; i += chunkSize) {
-        const chunk = matchDates.slice(i, i + chunkSize);
-        await Promise.all(
-          chunk.map(async (dt) => {
-            try {
-              const dayUrl = `${STATISTICS_BASE}/${leagueSlug}/scoreboard?dates=${dt}`;
-              const dayRes = await fetch(dayUrl, {
-                headers: ESPN_HEADERS,
-                next: { revalidate: 3600 },
-              });
-              if (dayRes.ok) {
-                const dayData = await dayRes.json();
-                if (dayData.events) {
-                  parseEvents(dayData.events);
-                }
-              }
-            } catch (dayErr) {
-              console.error(
-                `Error fetching day ${dt} for ${leagueSlug}:`,
-                dayErr,
-              );
-            }
-          }),
-        );
-        await new Promise((resolve) => setTimeout(resolve, 400));
-      }
-    } else {
-      // Prior seasons (e.g. 2025/2026 season)
-      const url = `${STATISTICS_BASE}/${leagueSlug}/scoreboard?dates=2026`;
-      const res = await fetch(url, {
-        headers: ESPN_HEADERS,
-        next: { revalidate: 3600 },
-      });
-      if (res.ok) {
+    for (const res of responses) {
+      if (res && res.ok) {
         const data = await res.json();
         if (data.events) {
-          parseEvents(data.events);
+          const seasonEvents = data.events.filter((ev: any) => {
+            const d = new Date(ev.date);
+            return d >= startDate && d < endDate;
+          });
+          parseEvents(seasonEvents);
         }
       }
     }
@@ -570,7 +596,7 @@ export async function fetchMatchSummary(
   try {
     const res = await fetch(url, {
       headers: ESPN_HEADERS,
-      next: { revalidate: 3600 },
+      cache: 'no-store',
     });
 
     if (!res.ok) {

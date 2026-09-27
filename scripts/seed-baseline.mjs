@@ -37,26 +37,31 @@ const LEAGUES = [
     slug: "eng.1",
     name: "Premier League",
     logoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500/23.png",
+    darkLogoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png",
   },
   {
     slug: "esp.1",
     name: "La Liga",
     logoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500/15.png",
+    darkLogoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/15.png",
   },
   {
     slug: "ita.1",
     name: "Serie A",
     logoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500/12.png",
+    darkLogoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/12.png",
   },
   {
     slug: "ger.1",
     name: "Bundesliga",
     logoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500/10.png",
+    darkLogoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/10.png",
   },
   {
     slug: "fra.1",
     name: "Ligue 1",
     logoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500/9.png",
+    darkLogoUrl: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/9.png",
   },
 ];
 
@@ -72,12 +77,14 @@ async function seedBaseline() {
       update: {
         name: league.name,
         logoUrl: league.logoUrl,
+        darkLogoUrl: league.darkLogoUrl,
       },
       create: {
         id: league.slug,
         slug: league.slug,
         name: league.name,
         logoUrl: league.logoUrl,
+        darkLogoUrl: league.darkLogoUrl,
       },
     });
   }

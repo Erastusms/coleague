@@ -1,5 +1,5 @@
-import React from "react";
-import { ShieldCheck } from "lucide-react";
+import React from 'react';
+import { ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -8,13 +8,9 @@ export const Footer: React.FC = () => {
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           <span>
-            Coleague © {new Date().getFullYear()} • Aggregating Premier League, La Liga, Serie A, Bundesliga, & Ligue 1
+            Coleague © {new Date().getFullYear()} • Combined Premier League, La
+            Liga, Serie A, Bundesliga, & Ligue 1
           </span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span>Data synced once daily from ESPN API</span>
-          <span>•</span>
-          <span className="text-slate-600 dark:text-slate-300">PostgreSQL + Prisma ORM</span>
         </div>
       </div>
     </footer>

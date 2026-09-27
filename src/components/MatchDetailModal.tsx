@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { MatchItem, LineupPlayer, TeamRoster } from "@/types/match";
 import { X, Sparkles, Shield, Users, BarChart3 } from "lucide-react";
+import { getLeagueDarkLogo } from "@/lib/constants";
 
 interface MatchDetailModalProps {
   match: MatchItem | null;
@@ -202,7 +203,13 @@ export const MatchDetailModal: React.FC<MatchDetailModalProps> = ({
               src={currentMatch.leagueLogoUrl}
               alt={currentMatch.leagueName}
               title={currentMatch.leagueName}
-              className="w-5 h-5 object-contain"
+              className="w-5 h-5 object-contain dark:hidden"
+            />
+            <img
+              src={currentMatch.leagueDarkLogoUrl || getLeagueDarkLogo(currentMatch.leagueSlug || currentMatch.leagueLogoUrl)}
+              alt={currentMatch.leagueName}
+              title={currentMatch.leagueName}
+              className="w-5 h-5 object-contain hidden dark:block"
             />
             <span className="hidden md:inline text-xs font-bold text-slate-600 dark:text-slate-300">
               {currentMatch.leagueName}
